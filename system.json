@@ -1,0 +1,30 @@
+{
+  "id": "quickquest",
+  "title": "QuickQuest",
+  "description": "A rules-lite d20 system: four stats, one die, no wrong answers. Built for two-hour one-shots.",
+  "version": "0.1.0",
+  "authors": [{ "name": "Raul" }],
+  "compatibility": {
+    "minimum": "12",
+    "verified": "14"
+  },
+  "esmodules": ["module/quickquest.mjs"],
+  "styles": ["styles/quickquest.css"],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "languages/en.json" }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "hero": {},
+      "monster": {}
+    }
+  },
+  "primaryTokenAttribute": "life",
+  "grid": {
+    "distance": 5,
+    "units": "ft"
+  },
+  "url": "",
+  "manifest": "",
+  "download": ""
+}
