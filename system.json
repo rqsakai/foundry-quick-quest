@@ -24,7 +24,7 @@
     "distance": 5,
     "units": "ft"
   },
-  "url": "",
-  "manifest": "",
-  "download": ""
+  "url": "https://github.com/rqsakai/foundry-quick-quest",
+  "manifest": "https://github.com/rqsakai/foundry-quick-quest/releases/latest/download/system.json",
+  "download": "https://github.com/rqsakai/foundry-quick-quest/releases/latest/download/quickquest.zip"
 }
