@@ -67,7 +67,7 @@
 
 /* ---------- weapons ---------- */
 .qq-weapons { border: 1.5px solid var(--qq-ink); padding: 6px 8px; background: #fff9ec66; }
-.qq-wrow { display: grid; grid-template-columns: 1fr 56px 62px 92px 100px 34px; gap: 5px; margin-bottom: 4px; align-items: center; }
+.qq-wrow { display: grid; grid-template-columns: 1fr 56px 62px 92px 100px 28px 34px; gap: 5px; margin-bottom: 4px; align-items: center; }
 .qq-whead { font-family: 'IM Fell English SC', serif; font-size: 10px; letter-spacing: .1em; color: var(--qq-spot);
   border-bottom: 1px solid var(--qq-ink); padding-bottom: 2px; }
 .qq-wrow button { box-shadow: 1.5px 1.5px 0 var(--qq-spot); padding: 1px 4px; }
@@ -99,6 +99,22 @@
 .qq-card-badge { display: inline-block; margin-top: 3px; padding: 0 6px; border: 1.5px solid #29211a;
   font-family: 'IM Fell English SC', serif; font-size: 11px; letter-spacing: .06em;
   background: var(--qq-spot, #3b5273); color: #f6efdf; }
+
+/* ---------- teaching: recovery row, Ace button, card buttons & badges ---------- */
+.qq-recover { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.qq-recover button { font-size: 12px; }
+.qq-ace-btn { width: 100%; font-size: 12px; }
+.qq-ace-btn:disabled { opacity: .55; cursor: default; box-shadow: 2px 2px 0 #8d7f6b; }
+.qq-ace-btn:disabled:hover { background: #fffaf0; color: var(--qq-ink); }
+.qq-card-btn {
+  display: inline-block; margin-top: 4px; padding: 1px 8px; line-height: 1.5; width: auto;
+  background: #fffaf0; border: 1.5px solid #29211a; border-radius: 0;
+  box-shadow: 2px 2px 0 var(--qq-spot, #3b5273); cursor: pointer; color: #29211a;
+  font-family: 'IM Fell English SC', serif; font-size: 11px; letter-spacing: .06em;
+}
+.qq-card-btn:hover { background: var(--qq-spot, #3b5273); color: #f6efdf; }
+.qq-card-badge.qq-crit { background: #7c3128; }
+.qq-card-badge.qq-fumble { background: #6b6155; }
 
 /* Ace nudge: out of MP and the Ace is still unplayed */
 .qq-ace-ready { outline: 2px solid var(--qq-spot); outline-offset: 2px; animation: qq-ace-pulse 2.4s ease-in-out infinite; }

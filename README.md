@@ -34,6 +34,20 @@ Four stats, one die, no wrong answers.
 16. Client Settings -> Language -> Português (Brasil), reload: both sheets, every roll card,
     the adv/dis dialog and the Create Actor types read in pt-BR with nothing clipped. Switch
     back to English -> everything reads as in steps 1-15.
+17. Hover every field, label and button on both sheets -> each shows one plain sentence.
+18. Attack until a natural 20 -> card says CRITICAL; the next weapon 🎲 asks "Double this
+    damage roll?" -> Double -> formula is wrapped "(…) * 2" and tagged CRITICAL ×2; a second
+    🎲 rolls normally. Attack until a natural 1 -> card says FUMBLE with a "Roll Fumble d6"
+    button that posts the fumble table from that hero. Same on the monster sheet.
+19. Shift-click Attack -> advantage, no dialog. Ctrl-click -> disadvantage. Plain click ->
+    dialog. Shift/Ctrl-click a stat button overrides the 4+ rule the same way.
+20. Life 5/11: "Treat wounds" -> Life 8, "Treated this fight" ticked, card shows the maths;
+    again -> notice "Already treated"; at full Life -> notice "Nothing to treat".
+    "Drink potion" -> 1d6+2 card, Life rises but never above max, card says it costs the turn.
+21. Ace: empty name -> button "Set your Ace" disabled; name + trigger typed -> "Play Ace";
+    click -> card with name and trigger, "Played this session" ticked, button disabled;
+    untick -> enabled again.
+22. Weapon 📜 -> usage card "Mace · d8+STR · Cutting · Touching" with the damage-type line.
 
 ## Not included yet
 - Items/compendia (weapons live as 3 rows on the sheet)

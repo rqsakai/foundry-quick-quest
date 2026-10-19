@@ -83,8 +83,9 @@ class HeroData extends foundry.abstract.TypeDataModel {
       profession: new fields.StringField({ initial: "" }),
       move:       new fields.StringField({ initial: "" }),
       ace: new fields.SchemaField({
-        name: new fields.StringField({ initial: "" }),
-        used: new fields.BooleanField({ initial: false })
+        name:    new fields.StringField({ initial: "" }),
+        trigger: new fields.StringField({ initial: "" }),   // when it may be played, player-typed
+        used:    new fields.BooleanField({ initial: false }) // ticked by Play Ace; a human unticks
       }),
       magic: new fields.SchemaField({
         cantrip:   new fields.StringField({ initial: "" }),   // a CANTRIPS id or "" (empty slot)
@@ -96,6 +97,7 @@ class HeroData extends foundry.abstract.TypeDataModel {
       gold:    new fields.NumberField({ required: true, integer: true, initial: 0 }),
       silver:  new fields.NumberField({ required: true, integer: true, initial: 0 }),
       raging:  new fields.BooleanField({ initial: false }),
+      treated: new fields.BooleanField({ initial: false }), // "Treated this fight" — a human unticks
       bonus:   new fields.NumberField({ required: true, integer: true, initial: 0 }),
       weapons: new fields.SchemaField({
         w1: weaponField(), w2: weaponField(), w3: weaponField()
@@ -207,6 +209,71 @@ function d20Formula(mode) {
   return mode === "adv" ? "2d20kh" : mode === "dis" ? "2d20kl" : "1d20";
 }
 
+/** Shift → advantage, Ctrl/Cmd → disadvantage, else null (ask with the dialog). */
+function pickModeFromEvent(event) {
+  if (event?.shiftKey) return "adv";
+  if (event?.ctrlKey || event?.metaKey) return "dis";
+  return null;
+}
+
+/** Natural 20 / natural 1 are judged on the kept die, not the total. */
+function keptD20(roll) {
+  return roll.dice[0]?.results.find(r => r.active)?.result ?? null;
+}
+
+// A natural 20 earns one doubled damage roll. In memory only — never stored on the actor —
+// and cleared by that actor's next damage roll or next attack roll.
+const PENDING_CRIT = new Set();
+
+/** Extra card HTML for a kept 20 (CRITICAL) or kept 1 (FUMBLE + roll button). */
+function attackBadges(roll, actor) {
+  const kept = keptD20(roll);
+  if (kept === 20) {
+    PENDING_CRIT.add(actor.id);
+    return `<div class="qq-card-badge qq-crit">${t("QQ.Roll.Critical")}</div>`;
+  }
+  PENDING_CRIT.delete(actor.id);
+  if (kept === 1) {
+    return `<div class="qq-card-badge qq-fumble">${t("QQ.Roll.FumbleBadge")}</div>
+      <button type="button" class="qq-card-btn" data-action="rollFumble" data-actor-uuid="${actor.uuid}">${t("QQ.Roll.RollFumble")}</button>`;
+  }
+  return "";
+}
+
+/** Attack roll for heroes and monsters: adv/dis from keys or dialog; never a modifier. */
+async function postAttack(actor, event, title) {
+  const mode = pickModeFromEvent(event) ?? await pickMode(title);
+  if (!mode) return;
+  const roll = await new Roll(d20Formula(mode)).evaluate();
+  const flavor = `<b>${t("QQ.Roll.Attack")}</b>${modeLabel(mode)}<br>${attackHint()}${attackBadges(roll, actor)}`;
+  await roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor }), flavor });
+  return roll;
+}
+
+/** After a natural 20, offer to double the next damage roll. Returns the formula to use. */
+async function maybeDouble(actor, formula, parts) {
+  if (!PENDING_CRIT.has(actor.id)) return formula;
+  PENDING_CRIT.delete(actor.id);
+  const ok = await DialogV2.confirm({
+    window: { title: t("QQ.Roll.CritPromptTitle") },
+    content: `<p>${t("QQ.Roll.CritPromptBody")}</p>`,
+    yes: { label: t("QQ.Roll.Double"), default: true },
+    no:  { label: t("QQ.Roll.NormalDamage") },
+    rejectClose: false
+  });
+  if (!ok) return formula;
+  parts.unshift(t("QQ.Roll.CritTag"));
+  return `(${formula}) * 2`;
+}
+
+/** The fumble table. Shared by the sheet button and the chat-card button. */
+async function rollFumble(actor) {
+  if (!actor) return;
+  const table = [1, 2, 3, 4, 5, 6].map(n => t(`QQ.Fumble.${n}`)).join(" · ");
+  const flavor = `<b>${t("QQ.Fumble.Title")}</b><br><span class="qq-hint">${table}</span>`;
+  return postRoll(actor, "1d6", flavor);
+}
+
 /* ------------------------------------------------------------
    HERO SHEET
    ------------------------------------------------------------ */
@@ -223,7 +290,11 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rollAttack: QuickQuestHeroSheet.#onRollAttack,
       rollDamage: QuickQuestHeroSheet.#onRollDamage,
       rollFumble: QuickQuestHeroSheet.#onRollFumble,
-      castSpell:  QuickQuestHeroSheet.#onCastSpell
+      castSpell:  QuickQuestHeroSheet.#onCastSpell,
+      playAce:     QuickQuestHeroSheet.#onPlayAce,
+      treatWounds: QuickQuestHeroSheet.#onTreatWounds,
+      drinkPotion: QuickQuestHeroSheet.#onDrinkPotion,
+      weaponCard:  QuickQuestHeroSheet.#onWeaponCard
     }
   };
 
@@ -324,15 +395,15 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const stat = target.dataset.stat;
     const value = this.actor.system.stats[stat];
     const adv = value >= 4;
+    const forced = pickModeFromEvent(event);           // Shift/Ctrl override the stat rule
+    const formula = forced ? d20Formula(forced) : (adv ? "2d20kh" : "1d20");
+    const suffix = forced ? modeLabel(forced) : (adv ? ` ${t("QQ.Roll.AdvStat")}` : "");
     const title = t("QQ.Roll.Check", { stat: t(`QQ.Stat.${stat}`) });
-    const flavor = `<b>${title}</b>${adv ? ` ${t("QQ.Roll.AdvStat")}` : ""}<br>${checkHint()}`;
-    await postRoll(this.actor, adv ? "2d20kh" : "1d20", flavor);
+    await postRoll(this.actor, formula, `<b>${title}</b>${suffix}<br>${checkHint()}`);
   }
 
   static async #onRollAttack(event, target) {
-    const mode = await pickMode(t("QQ.Roll.AttackTitle"));
-    if (!mode) return;
-    await postRoll(this.actor, d20Formula(mode), `<b>${t("QQ.Roll.Attack")}</b>${modeLabel(mode)}<br>${attackHint()}`);
+    await postAttack(this.actor, event, t("QQ.Roll.AttackTitle"));
   }
 
   static async #onRollDamage(event, target) {
@@ -346,14 +417,65 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const name = w.name || t("QQ.Roll.Weapon");
     const dtype = w.dtype ? t(`QQ.Weapon.Type.${w.dtype}`) : "";
     const reach = w.reach ? t(`QQ.Weapon.Reach.${w.reach}`) : "";
+    formula = await maybeDouble(this.actor, formula, parts);
     const flavor = `<b>${t("QQ.Roll.Damage", { name })}</b> (${parts.join(", ")})<br><span class="qq-hint">${dtype}${reach ? " · " + reach : ""}</span>`;
     await postRoll(this.actor, formula, flavor);
   }
 
   static async #onRollFumble(event, target) {
-    const table = [1, 2, 3, 4, 5, 6].map(n => t(`QQ.Fumble.${n}`)).join(" · ");
-    const flavor = `<b>${t("QQ.Fumble.Title")}</b><br><span class="qq-hint">${table}</span>`;
-    await postRoll(this.actor, "1d6", flavor);
+    return rollFumble(this.actor);
+  }
+
+  /* ---- teaching buttons ---- */
+
+  static async #onPlayAce(event, target) {
+    const ace = this.actor.system.ace;
+    if (!ace.name || ace.used) return;
+    await this.actor.update({ "system.ace.used": true });
+    return postCard(this.actor, `<div class="qq-card qq-card-ace">
+      <div class="qq-card-title">${t("QQ.Ace.Played")}: ${ace.name}</div>
+      ${ace.trigger ? `<div class="qq-card-body">${ace.trigger}</div>` : ""}
+      <div class="qq-card-foot">${t("QQ.Ace.OncePerSession")}</div>
+    </div>`);
+  }
+
+  static async #onTreatWounds(event, target) {
+    const sys = this.actor.system;
+    const missing = sys.life.max - sys.life.value;
+    if (missing <= 0) return ui.notifications.info(t("QQ.Recover.NothingToTreat"));
+    if (sys.treated)  return ui.notifications.info(t("QQ.Recover.AlreadyTreated"));
+    const heal = Math.ceil(missing / 2);                 // half of what is missing, rounded up
+    const from = sys.life.value, to = from + heal;
+    await this.actor.update({ "system.life.value": to, "system.treated": true });
+    return postCard(this.actor, `<div class="qq-card qq-card-recover">
+      <div class="qq-card-title">${t("QQ.Recover.TreatTitle")}</div>
+      <div class="qq-card-body">${t("QQ.Recover.TreatBody", { from, to, missing })}</div>
+      <div class="qq-card-foot">${t("QQ.Recover.OncePerFight")}</div>
+    </div>`);
+  }
+
+  static async #onDrinkPotion(event, target) {
+    const sys = this.actor.system;
+    const roll = await new Roll("1d6 + 2").evaluate();
+    const from = sys.life.value;
+    const heal = Math.max(0, Math.min(roll.total, sys.life.max - from)); // never above max
+    const to = from + heal;
+    if (heal > 0) await this.actor.update({ "system.life.value": to });
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+      flavor: `<b>${t("QQ.Recover.PotionTitle")}</b><br><span class="qq-hint">${t("QQ.Recover.PotionBody", { heal, from, to })}</span>`
+    });
+  }
+
+  static async #onWeaponCard(event, target) {
+    const w = this.actor.system.weapons[target.dataset.weapon];
+    const name = w.name || t("QQ.Roll.Weapon");
+    const meta = `${w.die}+${t(`QQ.Stat.${w.stat}`)} · ${t(`QQ.Weapon.Type.${w.dtype}`)} · ${t(`QQ.Weapon.Reach.${w.reach}`)}`;
+    return postCard(this.actor, `<div class="qq-card qq-card-weapon">
+      <div class="qq-card-title">${name}</div>
+      <div class="qq-card-meta">${meta}</div>
+      <div class="qq-card-body">${t(`QQ.Flavor.${w.dtype}`)}</div>
+    </div>`);
   }
 }
 
@@ -386,16 +508,16 @@ class QuickQuestMonsterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   static async #onRollAttack(event, target) {
-    const mode = await pickMode(t("QQ.Roll.MonsterAttackTitle"));
-    if (!mode) return;
-    await postRoll(this.actor, d20Formula(mode), `<b>${t("QQ.Roll.Attack")}</b>${modeLabel(mode)}<br>${attackHint()}`);
+    await postAttack(this.actor, event, t("QQ.Roll.MonsterAttackTitle"));
   }
 
   static async #onRollDamage(event, target) {
     const a = this.actor.system.attack;
     let formula = `1${a.die}`;
     if (a.bonus) formula += ` + ${a.bonus}`;
-    const flavor = `<b>${t("QQ.Roll.DamageMonster")}</b> (${a.die}${a.bonus ? " + " + a.bonus : ""})${a.dtype ? `<br><span class="qq-hint">${a.dtype}</span>` : ""}`;
+    const parts = [`${a.die}${a.bonus ? " + " + a.bonus : ""}`];
+    formula = await maybeDouble(this.actor, formula, parts);
+    const flavor = `<b>${t("QQ.Roll.DamageMonster")}</b> (${parts.join(", ")})${a.dtype ? `<br><span class="qq-hint">${a.dtype}</span>` : ""}`;
     await postRoll(this.actor, formula, flavor);
   }
 }
@@ -412,6 +534,16 @@ Hooks.once("init", () => {
     throw new Error("QuickQuest | SPELLS must have 12 entries, CANTRIPS 8");
   }
   if (MAGIC_IS_PLACEHOLDER) console.warn("QuickQuest | SPELLS/CANTRIPS are placeholders");
+
+  // Chat-card buttons (the fumble prompt on a natural 1). v13 renamed the hook and passes an
+  // HTMLElement instead of jQuery; register only the matching one.
+  const chatHook = game.release.generation >= 13 ? "renderChatMessageHTML" : "renderChatMessage";
+  Hooks.on(chatHook, (message, html) => {
+    const root = html instanceof HTMLElement ? html : html?.[0];
+    root?.querySelectorAll('.qq-card-btn[data-action="rollFumble"]').forEach(btn => {
+      btn.addEventListener("click", async () => rollFumble(await fromUuid(btn.dataset.actorUuid)));
+    });
+  });
 
   Object.assign(CONFIG.Actor.dataModels, {
     hero: HeroData,

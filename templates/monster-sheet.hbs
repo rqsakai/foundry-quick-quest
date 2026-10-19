@@ -1,40 +1,40 @@
 <div class="qq-sheet qq-msheet">
 
   <header class="qq-header">
-    <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'QQ.Sheet.MonsterName'}}"/>
+    <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'QQ.Sheet.MonsterName'}}" title="{{localize 'QQ.Tip.MonsterName'}}"/>
   </header>
 
   <section class="qq-derived">
-    <div class="qq-pool">
+    <div class="qq-pool" title="{{localize 'QQ.Tip.MonsterLife'}}">
       <span class="qq-lbl">{{localize "QQ.Sheet.Life"}}</span>
       <input type="number" name="system.life.value" value="{{system.life.value}}"/>
       <span class="qq-max">/ <input type="number" class="qq-maxin" name="system.life.max" value="{{system.life.max}}"/></span>
     </div>
-    <div class="qq-pool">
+    <div class="qq-pool" title="{{localize 'QQ.Tip.MonsterDefense'}}">
       <span class="qq-lbl">{{localize "QQ.Sheet.Defense"}}</span>
       <input type="number" name="system.defense" value="{{system.defense}}"/>
     </div>
   </section>
 
   <section class="qq-toggles">
-    <button type="button" class="qq-attack" data-action="rollAttack">{{localize "QQ.Sheet.Attack"}}</button>
-    <select name="system.attack.die">
+    <button type="button" class="qq-attack" data-action="rollAttack" title="{{localize 'QQ.Tip.Attack'}}">{{localize "QQ.Sheet.Attack"}}</button>
+    <select name="system.attack.die" title="{{localize 'QQ.Tip.MonsterDie'}}">
       <option value="d4" {{#if (eq system.attack.die "d4")}}selected{{/if}}>d4</option>
       <option value="d6" {{#if (eq system.attack.die "d6")}}selected{{/if}}>d6</option>
       <option value="d8" {{#if (eq system.attack.die "d8")}}selected{{/if}}>d8</option>
       <option value="d10" {{#if (eq system.attack.die "d10")}}selected{{/if}}>d10</option>
     </select>
-    <label class="qq-check">+ <input type="number" class="qq-bonus" name="system.attack.bonus" value="{{system.attack.bonus}}"/></label>
-    <input type="text" class="qq-dtype" name="system.attack.dtype" value="{{system.attack.dtype}}" placeholder="{{localize 'QQ.Monster.DamageType'}}"/>
+    <label class="qq-check" title="{{localize 'QQ.Tip.MonsterBonus'}}">+ <input type="number" class="qq-bonus" name="system.attack.bonus" value="{{system.attack.bonus}}"/></label>
+    <input type="text" class="qq-dtype" name="system.attack.dtype" value="{{system.attack.dtype}}" placeholder="{{localize 'QQ.Monster.DamageType'}}" title="{{localize 'QQ.Tip.MonsterDtype'}}"/>
     <button type="button" data-action="rollDamage" title="{{localize 'QQ.Weapon.RollDamage'}}">{{localize "QQ.Monster.Damage"}}</button>
   </section>
 
-  <section class="qq-box">
+  <section class="qq-box" title="{{localize 'QQ.Tip.Trick'}}">
     <span class="qq-boxlbl">{{localize "QQ.Monster.Trick"}}</span>
     <textarea name="system.trick" rows="2" placeholder="{{localize 'QQ.Monster.TrickPlaceholder'}}">{{system.trick}}</textarea>
   </section>
 
-  <section class="qq-box">
+  <section class="qq-box" title="{{localize 'QQ.Tip.Notes'}}">
     <span class="qq-boxlbl">{{localize "QQ.Monster.Notes"}}</span>
     <textarea name="system.notes" rows="3">{{system.notes}}</textarea>
   </section>

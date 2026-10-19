@@ -24,8 +24,8 @@ even if it "works".
   automatically (`#onRollCheck`). This applies to **checks only, never attacks**.
   Difficulty hints posted with every check: **Easy 8 · Tricky 12 · Hard 16**.
 - **Damage** = weapon die + **STR or AGI** (+2 while *Raging*, + the free `system.bonus`
-  field). Nat 20 = **double damage, applied manually** — the chat card reminds, code does
-  not double. Nat 1 = **fumble**: roll d6 on the table
+  field). Nat 20: the attack card shouts **CRITICAL** and that actor's next damage roll
+  **offers** ×2 in a yes/no dialog (`maybeDouble`); it is never applied silently. Nat 1 = **fumble**: roll d6 on the table
   (1 weapon flies away · 2 you trip · 3 hit the scenery · 4 wide open, next hit on you
   lands · 5 something loud breaks · 6 perfect — wrong target).
 
@@ -103,8 +103,8 @@ README.md                   install notes + the manual test checklist (our only 
 ### Data models (`module/quickquest.mjs`)
 - `HeroData extends foundry.abstract.TypeDataModel` — `stats.{str,agi,con,int}`,
   `life.value`, `mp.value`, `armor`, `race`, `trait`, `profession`, `move`,
-  `ace.{name,used}`, `magic.{cantrip,spell1,spell2,channeled}`, `gear`, `gold`, `silver`,
-  `raging`, `bonus`, `weapons.{w1,w2,w3}` (each `name, die, stat, dtype, reach`).
+  `ace.{name,trigger,used}`, `magic.{cantrip,spell1,spell2,channeled}`, `gear`, `gold`, `silver`,
+  `raging`, `treated`, `bonus`, `weapons.{w1,w2,w3}` (each `name, die, stat, dtype, reach`).
   Derived: `life.max`, `mp.max`, `defense`, `initiativeRank`, `aceReady`.
 - `MonsterData` — `life.{value,max}`, `defense`, `attack.{die,bonus,dtype}`, `trick`, `notes`.
 - New persistent fields go in `defineSchema()`. New computed values go in
@@ -137,6 +137,15 @@ class XSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 - Rolls go through `postRoll(actor, formula, flavor)` → `Roll` + `toMessage`. Cards without
   dice (spells) go through `postCard(actor, html)`. Adv/dis via `pickMode(title)`
   (`DialogV2.wait`, buttons dis/normal/adv, `rejectClose: false`).
+- Attacks go through `postAttack(actor, event, title)`: Shift/Ctrl/Cmd pick adv/dis without
+  the dialog (`pickModeFromEvent`), the kept die (`keptD20`) decides CRITICAL / FUMBLE badges.
+  `PENDING_CRIT` is an in-memory `Set` of actor ids, never a document field; `maybeDouble()`
+  consumes it on the next damage roll and any new attack clears it.
+- The only listener outside a sheet is the chat render hook registered in `init`
+  (`renderChatMessageHTML` on v13+, `renderChatMessage` on v12) binding `.qq-card-btn` fumble
+  buttons to the shared `rollFumble(actor)`.
+- Once-per-X state is always a checkbox field a human unticks: `raging`, `treated`,
+  `magic.channeled`, `ace.used`.
 - Every chat card carries a rules hint (`ATTACK_HINT`, `CHECK_HINT`, or inline
   `<span class="qq-hint">`). Keep doing this — the players are beginners.
 - Sheets are registered with `DocumentSheetConfig.registerSheet` using the

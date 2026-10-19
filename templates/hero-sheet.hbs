@@ -1,10 +1,10 @@
 <div class="qq-sheet">
 
   <header class="qq-header">
-    <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'QQ.Sheet.HeroName'}}"/>
+    <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'QQ.Sheet.HeroName'}}" title="{{localize 'QQ.Tip.Name'}}"/>
     <div class="qq-idrow">
-      <label>{{localize "QQ.Sheet.Race"}} <input type="text" name="system.race" value="{{system.race}}"/></label>
-      <label>{{localize "QQ.Sheet.Profession"}} <input type="text" name="system.profession" value="{{system.profession}}"/></label>
+      <label title="{{localize 'QQ.Tip.Race'}}">{{localize "QQ.Sheet.Race"}} <input type="text" name="system.race" value="{{system.race}}"/></label>
+      <label title="{{localize 'QQ.Tip.Profession'}}">{{localize "QQ.Sheet.Profession"}} <input type="text" name="system.profession" value="{{system.profession}}"/></label>
     </div>
   </header>
 
@@ -13,79 +13,91 @@
     <div class="qq-stat">
       <button type="button" class="qq-statbtn" data-action="rollCheck" data-stat="{{key}}"
               title="{{localize 'QQ.Sheet.CheckTip' stat=(localize (concat 'QQ.Stat.' key))}}">{{localize (concat "QQ.Stat." key)}}</button>
-      <input type="number" name="system.stats.{{key}}" value="{{val}}" min="1" max="5"/>
+      <input type="number" name="system.stats.{{key}}" value="{{val}}" min="1" max="5" title="{{localize 'QQ.Tip.Stat'}}"/>
     </div>
     {{/each}}
   </section>
 
   <section class="qq-derived">
-    <div class="qq-pool">
+    <div class="qq-pool" title="{{localize 'QQ.Tip.Life'}}">
       <span class="qq-lbl">{{localize "QQ.Sheet.Life"}}</span>
       <input type="number" name="system.life.value" value="{{system.life.value}}"/>
       <span class="qq-max">/ {{system.life.max}}</span>
     </div>
-    <div class="qq-pool">
+    <div class="qq-pool" title="{{localize 'QQ.Tip.MP'}}">
       <span class="qq-lbl">{{localize "QQ.Sheet.Magic"}}</span>
       <input type="number" name="system.mp.value" value="{{system.mp.value}}"/>
       <span class="qq-max">/ {{system.mp.max}}</span>
     </div>
-    <div class="qq-pool">
+    <div class="qq-pool" title="{{localize 'QQ.Tip.Defense'}}">
       <span class="qq-lbl">{{localize "QQ.Sheet.Defense"}}</span>
       <span class="qq-defense">{{system.defense}}</span>
-      <span class="qq-max">{{localize "QQ.Sheet.Armor"}}
+      <span class="qq-max" title="{{localize 'QQ.Tip.Armor'}}">{{localize "QQ.Sheet.Armor"}}
         <input type="number" name="system.armor" value="{{system.armor}}" min="0" max="4"/>
       </span>
     </div>
   </section>
 
   <section class="qq-toggles">
-    <button type="button" class="qq-attack" data-action="rollAttack">{{localize "QQ.Sheet.Attack"}}</button>
-    <label class="qq-check"><input type="checkbox" name="system.raging" {{checked system.raging}}/> {{localize "QQ.Sheet.Raging"}}</label>
-    <label class="qq-check">{{localize "QQ.Sheet.BonusDmg"}} <input type="number" class="qq-bonus" name="system.bonus" value="{{system.bonus}}"/></label>
-    <button type="button" class="qq-fumble" data-action="rollFumble">{{localize "QQ.Sheet.Fumble"}}</button>
+    <button type="button" class="qq-attack" data-action="rollAttack" title="{{localize 'QQ.Tip.Attack'}}">{{localize "QQ.Sheet.Attack"}}</button>
+    <label class="qq-check" title="{{localize 'QQ.Tip.Raging'}}"><input type="checkbox" name="system.raging" {{checked system.raging}}/> {{localize "QQ.Sheet.Raging"}}</label>
+    <label class="qq-check" title="{{localize 'QQ.Tip.Bonus'}}">{{localize "QQ.Sheet.BonusDmg"}} <input type="number" class="qq-bonus" name="system.bonus" value="{{system.bonus}}"/></label>
+    <button type="button" class="qq-fumble" data-action="rollFumble" title="{{localize 'QQ.Tip.Fumble'}}">{{localize "QQ.Sheet.Fumble"}}</button>
+  </section>
+
+  <section class="qq-recover">
+    <button type="button" data-action="treatWounds" title="{{localize 'QQ.Tip.Treat'}}">{{localize "QQ.Recover.Treat"}}</button>
+    <label class="qq-check" title="{{localize 'QQ.Tip.Treated'}}"><input type="checkbox" name="system.treated" {{checked system.treated}}/> {{localize "QQ.Recover.Treated"}}</label>
+    <button type="button" data-action="drinkPotion" title="{{localize 'QQ.Tip.Potion'}}">{{localize "QQ.Recover.Potion"}}</button>
   </section>
 
   <section class="qq-weapons">
     <div class="qq-wrow qq-whead">
-      <span>{{localize "QQ.Weapon.Weapon"}}</span><span>{{localize "QQ.Weapon.Die"}}</span><span>{{localize "QQ.Weapon.Stat"}}</span><span>{{localize "QQ.Weapon.ColType"}}</span><span>{{localize "QQ.Weapon.ColReach"}}</span><span></span>
+      <span title="{{localize 'QQ.Tip.WeaponName'}}">{{localize "QQ.Weapon.Weapon"}}</span><span title="{{localize 'QQ.Tip.WeaponDie'}}">{{localize "QQ.Weapon.Die"}}</span><span title="{{localize 'QQ.Tip.WeaponStat'}}">{{localize "QQ.Weapon.Stat"}}</span><span title="{{localize 'QQ.Tip.WeaponType'}}">{{localize "QQ.Weapon.ColType"}}</span><span title="{{localize 'QQ.Tip.WeaponReach'}}">{{localize "QQ.Weapon.ColReach"}}</span><span></span><span></span>
     </div>
     {{#each weapons as |w|}}
     <div class="qq-wrow">
-      <input type="text" name="system.weapons.{{w.key}}.name" value="{{w.name}}" placeholder="{{localize 'QQ.Weapon.EmptyName'}}"/>
-      <select name="system.weapons.{{w.key}}.die">
+      <input type="text" name="system.weapons.{{w.key}}.name" value="{{w.name}}" placeholder="{{localize 'QQ.Weapon.EmptyName'}}" title="{{localize 'QQ.Tip.WeaponName'}}"/>
+      <select name="system.weapons.{{w.key}}.die" title="{{localize 'QQ.Tip.WeaponDie'}}">
         <option value="d4" {{#if (eq w.die "d4")}}selected{{/if}}>d4</option>
         <option value="d6" {{#if (eq w.die "d6")}}selected{{/if}}>d6</option>
         <option value="d8" {{#if (eq w.die "d8")}}selected{{/if}}>d8</option>
       </select>
-      <select name="system.weapons.{{w.key}}.stat">
+      <select name="system.weapons.{{w.key}}.stat" title="{{localize 'QQ.Tip.WeaponStat'}}">
         <option value="str" {{#if (eq w.stat "str")}}selected{{/if}}>{{localize "QQ.Stat.str"}}</option>
         <option value="agi" {{#if (eq w.stat "agi")}}selected{{/if}}>{{localize "QQ.Stat.agi"}}</option>
       </select>
-      <select name="system.weapons.{{w.key}}.dtype">
+      <select name="system.weapons.{{w.key}}.dtype" title="{{localize 'QQ.Tip.WeaponType'}}">
         <option value="bludgeoning" {{#if (eq w.dtype "bludgeoning")}}selected{{/if}}>{{localize "QQ.Weapon.Type.bludgeoning"}}</option>
         <option value="cutting" {{#if (eq w.dtype "cutting")}}selected{{/if}}>{{localize "QQ.Weapon.Type.cutting"}}</option>
         <option value="piercing" {{#if (eq w.dtype "piercing")}}selected{{/if}}>{{localize "QQ.Weapon.Type.piercing"}}</option>
       </select>
-      <select name="system.weapons.{{w.key}}.reach">
+      <select name="system.weapons.{{w.key}}.reach" title="{{localize 'QQ.Tip.WeaponReach'}}">
         <option value="touching" {{#if (eq w.reach "touching")}}selected{{/if}}>{{localize "QQ.Weapon.Reach.touching"}}</option>
         <option value="thrown nearby" {{#if (eq w.reach "thrown nearby")}}selected{{/if}}>{{localize "QQ.Weapon.Reach.thrown nearby"}}</option>
         <option value="far" {{#if (eq w.reach "far")}}selected{{/if}}>{{localize "QQ.Weapon.Reach.far"}}</option>
       </select>
-      <button type="button" data-action="rollDamage" data-weapon="{{w.key}}" title="{{localize 'QQ.Weapon.RollDamage'}}">🎲</button>
+      <button type="button" data-action="weaponCard" data-weapon="{{w.key}}" title="{{localize 'QQ.Tip.WeaponCard'}}">📜</button>
+      <button type="button" data-action="rollDamage" data-weapon="{{w.key}}" title="{{localize 'QQ.Tip.WeaponRoll'}}">🎲</button>
     </div>
     {{/each}}
   </section>
 
   <section class="qq-twocol">
-    <div class="qq-box{{#if system.aceReady}} qq-ace-ready{{/if}}"{{#if system.aceReady}} title="{{localize 'QQ.Magic.AceReadyTip'}}"{{/if}}>
+    <div class="qq-box{{#if system.aceReady}} qq-ace-ready{{/if}}" title="{{#if system.aceReady}}{{localize 'QQ.Magic.AceReadyTip'}}{{else}}{{localize 'QQ.Tip.Ace'}}{{/if}}">
       <span class="qq-boxlbl">{{localize "QQ.Sheet.Ace"}}</span>
-      <input type="text" name="system.ace.name" value="{{system.ace.name}}" placeholder="{{localize 'QQ.Sheet.AcePlaceholder'}}"/>
-      <label class="qq-check"><input type="checkbox" name="system.ace.used" {{checked system.ace.used}}/> {{localize "QQ.Sheet.AceUsed"}}</label>
+      <input type="text" name="system.ace.name" value="{{system.ace.name}}" placeholder="{{localize 'QQ.Sheet.AcePlaceholder'}}" title="{{localize 'QQ.Tip.AceName'}}"/>
+      <input type="text" name="system.ace.trigger" value="{{system.ace.trigger}}" placeholder="{{localize 'QQ.Sheet.AceTriggerPlaceholder'}}" title="{{localize 'QQ.Tip.AceTrigger'}}"/>
+      <button type="button" class="qq-ace-btn" data-action="playAce"
+        {{#if system.ace.used}}disabled title="{{localize 'QQ.Ace.PlayedTip'}}"{{else if system.ace.name}}title="{{#if system.ace.trigger}}{{system.ace.trigger}}{{else}}{{localize 'QQ.Tip.Ace'}}{{/if}}"{{else}}disabled title="{{localize 'QQ.Tip.AceName'}}"{{/if}}>
+        {{#if system.ace.name}}{{localize "QQ.Ace.Play"}}{{else}}{{localize "QQ.Ace.SetFirst"}}{{/if}}
+      </button>
+      <label class="qq-check" title="{{localize 'QQ.Tip.AceUsed'}}"><input type="checkbox" name="system.ace.used" {{checked system.ace.used}}/> {{localize "QQ.Sheet.AceUsed"}}</label>
     </div>
     <div class="qq-box">
       <span class="qq-boxlbl">{{localize "QQ.Sheet.TraitMove"}}</span>
-      <input type="text" name="system.trait" value="{{system.trait}}" placeholder="{{localize 'QQ.Sheet.Trait'}}"/>
-      <input type="text" name="system.move" value="{{system.move}}" placeholder="{{localize 'QQ.Sheet.Move'}}"/>
+      <input type="text" name="system.trait" value="{{system.trait}}" placeholder="{{localize 'QQ.Sheet.Trait'}}" title="{{localize 'QQ.Tip.Trait'}}"/>
+      <input type="text" name="system.move" value="{{system.move}}" placeholder="{{localize 'QQ.Sheet.Move'}}" title="{{localize 'QQ.Tip.Move'}}"/>
     </div>
   </section>
 
@@ -95,7 +107,7 @@
       {{#each slots as |slot|}}
       <div class="qq-slot">
         <span class="qq-lbl">{{slot.label}}</span>
-        <select name="system.magic.{{slot.key}}">
+        <select name="system.magic.{{slot.key}}" title="{{localize 'QQ.Tip.MP'}}">
           {{selectOptions slot.choices selected=slot.value blank=(localize "QQ.Magic.Empty")}}
         </select>
         {{#if slot.entry}}
@@ -114,10 +126,10 @@
     </div>
     <div class="qq-box">
       <span class="qq-boxlbl">{{localize "QQ.Sheet.Gear"}}</span>
-      <textarea name="system.gear" rows="3" placeholder="{{localize 'QQ.Sheet.GearPlaceholder'}}">{{system.gear}}</textarea>
+      <textarea name="system.gear" rows="3" placeholder="{{localize 'QQ.Sheet.GearPlaceholder'}}" title="{{localize 'QQ.Tip.Gear'}}">{{system.gear}}</textarea>
       <div class="qq-coins">
-        <label>{{localize "QQ.Sheet.Gold"}} <input type="number" name="system.gold" value="{{system.gold}}"/></label>
-        <label>{{localize "QQ.Sheet.Silver"}} <input type="number" name="system.silver" value="{{system.silver}}"/></label>
+        <label title="{{localize 'QQ.Tip.Gold'}}">{{localize "QQ.Sheet.Gold"}} <input type="number" name="system.gold" value="{{system.gold}}"/></label>
+        <label title="{{localize 'QQ.Tip.Silver'}}">{{localize "QQ.Sheet.Silver"}} <input type="number" name="system.silver" value="{{system.silver}}"/></label>
       </div>
     </div>
   </section>
