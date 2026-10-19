@@ -31,6 +31,9 @@ Four stats, one die, no wrong answers.
     refused (cannot survive the cost).
 15. Before release: no "placeholder" hint in the magic box and no console warning about
     SPELLS/CANTRIPS; the 20 entries match docs/rulebook.md.
+16. Client Settings -> Language -> Português (Brasil), reload: both sheets, every roll card,
+    the adv/dis dialog and the Create Actor types read in pt-BR with nothing clipped. Switch
+    back to English -> everything reads as in steps 1-15.
 
 ## Not included yet
 - Items/compendia (weapons live as 3 rows on the sheet)

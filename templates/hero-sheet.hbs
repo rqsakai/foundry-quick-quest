@@ -1,10 +1,10 @@
 <div class="qq-sheet">
 
   <header class="qq-header">
-    <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="Hero name"/>
+    <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'QQ.Sheet.HeroName'}}"/>
     <div class="qq-idrow">
-      <label>Race <input type="text" name="system.race" value="{{system.race}}"/></label>
-      <label>Profession <input type="text" name="system.profession" value="{{system.profession}}"/></label>
+      <label>{{localize "QQ.Sheet.Race"}} <input type="text" name="system.race" value="{{system.race}}"/></label>
+      <label>{{localize "QQ.Sheet.Profession"}} <input type="text" name="system.profession" value="{{system.profession}}"/></label>
     </div>
   </header>
 
@@ -12,7 +12,7 @@
     {{#each system.stats as |val key|}}
     <div class="qq-stat">
       <button type="button" class="qq-statbtn" data-action="rollCheck" data-stat="{{key}}"
-              title="Roll a {{key}} check (advantage at 4+)">{{key}}</button>
+              title="{{localize 'QQ.Sheet.CheckTip' stat=(localize (concat 'QQ.Stat.' key))}}">{{localize (concat "QQ.Stat." key)}}</button>
       <input type="number" name="system.stats.{{key}}" value="{{val}}" min="1" max="5"/>
     </div>
     {{/each}}
@@ -20,78 +20,78 @@
 
   <section class="qq-derived">
     <div class="qq-pool">
-      <span class="qq-lbl">Life</span>
+      <span class="qq-lbl">{{localize "QQ.Sheet.Life"}}</span>
       <input type="number" name="system.life.value" value="{{system.life.value}}"/>
       <span class="qq-max">/ {{system.life.max}}</span>
     </div>
     <div class="qq-pool">
-      <span class="qq-lbl">Magic</span>
+      <span class="qq-lbl">{{localize "QQ.Sheet.Magic"}}</span>
       <input type="number" name="system.mp.value" value="{{system.mp.value}}"/>
       <span class="qq-max">/ {{system.mp.max}}</span>
     </div>
     <div class="qq-pool">
-      <span class="qq-lbl">Defense</span>
+      <span class="qq-lbl">{{localize "QQ.Sheet.Defense"}}</span>
       <span class="qq-defense">{{system.defense}}</span>
-      <span class="qq-max">armor
+      <span class="qq-max">{{localize "QQ.Sheet.Armor"}}
         <input type="number" name="system.armor" value="{{system.armor}}" min="0" max="4"/>
       </span>
     </div>
   </section>
 
   <section class="qq-toggles">
-    <button type="button" class="qq-attack" data-action="rollAttack">⚔ Attack d20</button>
-    <label class="qq-check"><input type="checkbox" name="system.raging" {{checked system.raging}}/> Raging +2</label>
-    <label class="qq-check">Bonus dmg <input type="number" class="qq-bonus" name="system.bonus" value="{{system.bonus}}"/></label>
-    <button type="button" class="qq-fumble" data-action="rollFumble">Fumble d6</button>
+    <button type="button" class="qq-attack" data-action="rollAttack">{{localize "QQ.Sheet.Attack"}}</button>
+    <label class="qq-check"><input type="checkbox" name="system.raging" {{checked system.raging}}/> {{localize "QQ.Sheet.Raging"}}</label>
+    <label class="qq-check">{{localize "QQ.Sheet.BonusDmg"}} <input type="number" class="qq-bonus" name="system.bonus" value="{{system.bonus}}"/></label>
+    <button type="button" class="qq-fumble" data-action="rollFumble">{{localize "QQ.Sheet.Fumble"}}</button>
   </section>
 
   <section class="qq-weapons">
     <div class="qq-wrow qq-whead">
-      <span>Weapon</span><span>Die</span><span>Stat</span><span>Type</span><span>Reach</span><span></span>
+      <span>{{localize "QQ.Weapon.Weapon"}}</span><span>{{localize "QQ.Weapon.Die"}}</span><span>{{localize "QQ.Weapon.Stat"}}</span><span>{{localize "QQ.Weapon.ColType"}}</span><span>{{localize "QQ.Weapon.ColReach"}}</span><span></span>
     </div>
     {{#each weapons as |w|}}
     <div class="qq-wrow">
-      <input type="text" name="system.weapons.{{w.key}}.name" value="{{w.name}}" placeholder="—"/>
+      <input type="text" name="system.weapons.{{w.key}}.name" value="{{w.name}}" placeholder="{{localize 'QQ.Weapon.EmptyName'}}"/>
       <select name="system.weapons.{{w.key}}.die">
         <option value="d4" {{#if (eq w.die "d4")}}selected{{/if}}>d4</option>
         <option value="d6" {{#if (eq w.die "d6")}}selected{{/if}}>d6</option>
         <option value="d8" {{#if (eq w.die "d8")}}selected{{/if}}>d8</option>
       </select>
       <select name="system.weapons.{{w.key}}.stat">
-        <option value="str" {{#if (eq w.stat "str")}}selected{{/if}}>STR</option>
-        <option value="agi" {{#if (eq w.stat "agi")}}selected{{/if}}>AGI</option>
+        <option value="str" {{#if (eq w.stat "str")}}selected{{/if}}>{{localize "QQ.Stat.str"}}</option>
+        <option value="agi" {{#if (eq w.stat "agi")}}selected{{/if}}>{{localize "QQ.Stat.agi"}}</option>
       </select>
       <select name="system.weapons.{{w.key}}.dtype">
-        <option value="bludgeoning" {{#if (eq w.dtype "bludgeoning")}}selected{{/if}}>Bludg.</option>
-        <option value="cutting" {{#if (eq w.dtype "cutting")}}selected{{/if}}>Cutting</option>
-        <option value="piercing" {{#if (eq w.dtype "piercing")}}selected{{/if}}>Piercing</option>
+        <option value="bludgeoning" {{#if (eq w.dtype "bludgeoning")}}selected{{/if}}>{{localize "QQ.Weapon.Type.bludgeoning"}}</option>
+        <option value="cutting" {{#if (eq w.dtype "cutting")}}selected{{/if}}>{{localize "QQ.Weapon.Type.cutting"}}</option>
+        <option value="piercing" {{#if (eq w.dtype "piercing")}}selected{{/if}}>{{localize "QQ.Weapon.Type.piercing"}}</option>
       </select>
       <select name="system.weapons.{{w.key}}.reach">
-        <option value="touching" {{#if (eq w.reach "touching")}}selected{{/if}}>Touching</option>
-        <option value="thrown nearby" {{#if (eq w.reach "thrown nearby")}}selected{{/if}}>Thrown</option>
-        <option value="far" {{#if (eq w.reach "far")}}selected{{/if}}>Far</option>
+        <option value="touching" {{#if (eq w.reach "touching")}}selected{{/if}}>{{localize "QQ.Weapon.Reach.touching"}}</option>
+        <option value="thrown nearby" {{#if (eq w.reach "thrown nearby")}}selected{{/if}}>{{localize "QQ.Weapon.Reach.thrown nearby"}}</option>
+        <option value="far" {{#if (eq w.reach "far")}}selected{{/if}}>{{localize "QQ.Weapon.Reach.far"}}</option>
       </select>
-      <button type="button" data-action="rollDamage" data-weapon="{{w.key}}" title="Roll damage">🎲</button>
+      <button type="button" data-action="rollDamage" data-weapon="{{w.key}}" title="{{localize 'QQ.Weapon.RollDamage'}}">🎲</button>
     </div>
     {{/each}}
   </section>
 
   <section class="qq-twocol">
     <div class="qq-box{{#if system.aceReady}} qq-ace-ready{{/if}}"{{#if system.aceReady}} title="{{localize 'QQ.Magic.AceReadyTip'}}"{{/if}}>
-      <span class="qq-boxlbl">Ace — once per session</span>
-      <input type="text" name="system.ace.name" value="{{system.ace.name}}" placeholder="Unbreakable, Final Word…"/>
-      <label class="qq-check"><input type="checkbox" name="system.ace.used" {{checked system.ace.used}}/> Played this session</label>
+      <span class="qq-boxlbl">{{localize "QQ.Sheet.Ace"}}</span>
+      <input type="text" name="system.ace.name" value="{{system.ace.name}}" placeholder="{{localize 'QQ.Sheet.AcePlaceholder'}}"/>
+      <label class="qq-check"><input type="checkbox" name="system.ace.used" {{checked system.ace.used}}/> {{localize "QQ.Sheet.AceUsed"}}</label>
     </div>
     <div class="qq-box">
-      <span class="qq-boxlbl">Race trait &amp; profession move</span>
-      <input type="text" name="system.trait" value="{{system.trait}}" placeholder="Trait"/>
-      <input type="text" name="system.move" value="{{system.move}}" placeholder="Move"/>
+      <span class="qq-boxlbl">{{localize "QQ.Sheet.TraitMove"}}</span>
+      <input type="text" name="system.trait" value="{{system.trait}}" placeholder="{{localize 'QQ.Sheet.Trait'}}"/>
+      <input type="text" name="system.move" value="{{system.move}}" placeholder="{{localize 'QQ.Sheet.Move'}}"/>
     </div>
   </section>
 
   <section class="qq-twocol">
     <div class="qq-box qq-magic">
-      <span class="qq-boxlbl">Spells &amp; cantrip</span>
+      <span class="qq-boxlbl">{{localize "QQ.Sheet.Spells"}}</span>
       {{#each slots as |slot|}}
       <div class="qq-slot">
         <span class="qq-lbl">{{slot.label}}</span>
@@ -113,17 +113,17 @@
       {{#if magicPlaceholder}}<span class="qq-hint">{{localize "QQ.Magic.PlaceholderHint"}}</span>{{/if}}
     </div>
     <div class="qq-box">
-      <span class="qq-boxlbl">Gear &amp; coin</span>
-      <textarea name="system.gear" rows="3" placeholder="Rope, torches…">{{system.gear}}</textarea>
+      <span class="qq-boxlbl">{{localize "QQ.Sheet.Gear"}}</span>
+      <textarea name="system.gear" rows="3" placeholder="{{localize 'QQ.Sheet.GearPlaceholder'}}">{{system.gear}}</textarea>
       <div class="qq-coins">
-        <label>Gold <input type="number" name="system.gold" value="{{system.gold}}"/></label>
-        <label>Silver <input type="number" name="system.silver" value="{{system.silver}}"/></label>
+        <label>{{localize "QQ.Sheet.Gold"}} <input type="number" name="system.gold" value="{{system.gold}}"/></label>
+        <label>{{localize "QQ.Sheet.Silver"}} <input type="number" name="system.silver" value="{{system.silver}}"/></label>
       </div>
     </div>
   </section>
 
   <footer class="qq-remind">
-    Hit: d20 ≥ Defense · nat 20 double · stat 4–5 = advantage on checks · channel: 2 Life per missing MP, once per fight
+    {{localize "QQ.Sheet.HeroFooter"}}
   </footer>
 
 </div>

@@ -67,7 +67,7 @@
 
 /* ---------- weapons ---------- */
 .qq-weapons { border: 1.5px solid var(--qq-ink); padding: 6px 8px; background: #fff9ec66; }
-.qq-wrow { display: grid; grid-template-columns: 1fr 56px 62px 84px 92px 34px; gap: 5px; margin-bottom: 4px; align-items: center; }
+.qq-wrow { display: grid; grid-template-columns: 1fr 56px 62px 92px 100px 34px; gap: 5px; margin-bottom: 4px; align-items: center; }
 .qq-whead { font-family: 'IM Fell English SC', serif; font-size: 10px; letter-spacing: .1em; color: var(--qq-spot);
   border-bottom: 1px solid var(--qq-ink); padding-bottom: 2px; }
 .qq-wrow button { box-shadow: 1.5px 1.5px 0 var(--qq-spot); padding: 1px 4px; }
@@ -85,7 +85,7 @@
 
 /* ---------- magic & cards ---------- */
 .qq-magic { gap: 5px; }
-.qq-slot { display: grid; grid-template-columns: 52px 1fr 48px; gap: 5px; align-items: center; }
+.qq-slot { display: grid; grid-template-columns: 64px 1fr 52px; gap: 5px; align-items: center; }
 .qq-slot select { min-width: 0; }
 .qq-cast { font-size: 11px; padding: 1px 6px; box-shadow: 1.5px 1.5px 0 var(--qq-spot); }
 .qq-magic .qq-check { margin-top: 2px; }

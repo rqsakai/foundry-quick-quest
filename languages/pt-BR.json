@@ -1,0 +1,130 @@
+{
+  "TYPES": {
+    "Actor": {
+      "hero": "Herói",
+      "monster": "Monstro"
+    }
+  },
+  "QQ": {
+    "Sheet": {
+      "HeroName": "Nome do herói",
+      "MonsterName": "Nome do monstro",
+      "Race": "Raça",
+      "Profession": "Profissão",
+      "Life": "Vida",
+      "Magic": "Magia",
+      "Defense": "Defesa",
+      "Armor": "armadura",
+      "Attack": "⚔ Ataque d20",
+      "Raging": "Fúria +2",
+      "BonusDmg": "Bônus de dano",
+      "Fumble": "Falha d6",
+      "CheckTip": "Rolar teste de {stat} (vantagem com 4+)",
+      "Ace": "Ace — uma vez por sessão",
+      "AcePlaceholder": "Inquebrável, Última Palavra…",
+      "AceUsed": "Usado nesta sessão",
+      "TraitMove": "Traço da raça & manobra da profissão",
+      "Trait": "Traço",
+      "Move": "Manobra",
+      "Spells": "Magias & encanto",
+      "Gear": "Equipamento & moedas",
+      "GearPlaceholder": "Corda, tochas…",
+      "Gold": "Ouro",
+      "Silver": "Prata",
+      "HeroFooter": "Acerto: d20 ≥ Defesa · 20 natural dobra o dano · atributo 4–5 = vantagem em testes · canalizar: 2 de Vida por PM faltante, uma vez por luta",
+      "HeroSheet": "QuickQuest — Herói",
+      "MonsterSheet": "QuickQuest — Monstro"
+    },
+    "Stat": {
+      "str": "FOR",
+      "agi": "AGI",
+      "con": "CON",
+      "int": "INT"
+    },
+    "Weapon": {
+      "Weapon": "Arma",
+      "Die": "Dado",
+      "Stat": "Atrib.",
+      "ColType": "Tipo",
+      "ColReach": "Alcance",
+      "RollDamage": "Rolar dano",
+      "EmptyName": "—",
+      "Type": {
+        "bludgeoning": "Impacto",
+        "cutting": "Corte",
+        "piercing": "Perfur."
+      },
+      "Reach": {
+        "touching": "Toque",
+        "thrown nearby": "Arremesso",
+        "far": "Longe"
+      }
+    },
+    "Range": {
+      "touching": "toque",
+      "nearby": "perto",
+      "far": "longe"
+    },
+    "Roll": {
+      "AttackTitle": "Rolagem de ataque",
+      "MonsterAttackTitle": "Ataque do monstro",
+      "Attack": "Ataque",
+      "Check": "Teste de {stat}",
+      "Damage": "{name} — dano",
+      "DamageMonster": "Dano",
+      "Weapon": "Arma",
+      "Advantage": "Vantagem",
+      "Disadvantage": "Desvantagem",
+      "Normal": "Normal",
+      "AdvStat": "— vantagem (atributo 4+)",
+      "Adv": "— vantagem",
+      "Dis": "— desvantagem",
+      "Rage": "fúria +2",
+      "Bonus": "bônus {bonus}",
+      "AttackHint": "Acerta se ≥ Defesa do alvo · 20 natural = dano dobrado · 1 natural = falha (role d6)",
+      "CheckHint": "Fácil 8 · Complicado 12 · Difícil 16"
+    },
+    "Fumble": {
+      "Title": "Falha!",
+      "1": "1 a arma voa longe",
+      "2": "2 você tropeça",
+      "3": "3 acerta o cenário",
+      "4": "4 fica exposto, o próximo golpe em você acerta",
+      "5": "5 algo barulhento quebra",
+      "6": "6 perfeito — no alvo errado"
+    },
+    "Monster": {
+      "DamageType": "tipo de dano",
+      "Damage": "🎲 Dano",
+      "Trick": "Truque — a única coisa que vão lembrar",
+      "TrickPlaceholder": "Foge quando metade do bando cai…",
+      "Notes": "Notas",
+      "Footer": "Monstros comuns +1/+2 · chefes +3/+4 · mais forte = mais Vida, nunca mais Defesa"
+    },
+    "Magic": {
+      "Cantrip": "Encanto",
+      "Spell1": "Magia 1",
+      "Spell2": "Magia 2",
+      "MP": "PM",
+      "Cast": "Lançar",
+      "CastTip": "Gasta os PM e publica a magia no chat; encantos são grátis",
+      "Channeled": "Canalizou nesta luta",
+      "ChanneledTip": "Faltou PM? Pague 2 de Vida por PM faltante, uma vez por luta. Desmarque quando a luta acabar.",
+      "ChannelTitle": "Canalizar seu sangue?",
+      "ChannelBody": "Faltam {missing} PM. Canalizar {lifeCost} de Vida para lançar {spell}?",
+      "ChannelButton": "Canalizar",
+      "Cancel": "Cancelar",
+      "AlreadyChanneled": "Você já canalizou nesta luta. Desmarque a caixa quando a luta acabar.",
+      "CannotSurvive": "Canalizar custaria {lifeCost} de Vida e você tem {life}. Você não sobreviveria ao custo.",
+      "Range": "Alcance",
+      "Cost": "Custo",
+      "MPLeft": "PM restantes",
+      "CantripFree": "Encanto, grátis",
+      "ChanneledBadge": "Canalizado",
+      "Life": "Vida",
+      "AceReadyTip": "Sem PM — seu Ace está pronto. Use quando chegar a hora.",
+      "PlaceholderHint": "Lista de magias provisória — preencha SPELLS/CANTRIPS a partir de docs/rulebook.md",
+      "Empty": "—"
+    }
+  }
+}

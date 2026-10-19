@@ -139,8 +139,19 @@ class MonsterData extends foundry.abstract.TypeDataModel {
    ROLL HELPERS
    ------------------------------------------------------------ */
 
-const ATTACK_HINT = `<span class="qq-hint">Hits if &ge; target's Defense · nat 20 = double damage · nat 1 = fumble (roll d6)</span>`;
-const CHECK_HINT  = `<span class="qq-hint">Easy 8 · Tricky 12 · Hard 16</span>`;
+/** Localize a key; with data, format it. All user-visible text goes through here. */
+function t(key, data) {
+  return data ? game.i18n.format(key, data) : game.i18n.localize(key);
+}
+
+// Hints are built at call time: i18n is not ready when the module loads.
+const attackHint = () => `<span class="qq-hint">${t("QQ.Roll.AttackHint")}</span>`;
+const checkHint  = () => `<span class="qq-hint">${t("QQ.Roll.CheckHint")}</span>`;
+
+/** " — advantage" / " — disadvantage" / "" for a pickMode() result. */
+function modeLabel(mode) {
+  return mode === "adv" ? ` ${t("QQ.Roll.Adv")}` : mode === "dis" ? ` ${t("QQ.Roll.Dis")}` : "";
+}
 
 async function postRoll(actor, formula, flavor) {
   const roll = await new Roll(formula).evaluate();
@@ -162,9 +173,10 @@ async function postCard(actor, html) {
 /** Letterpress chat card for a spell or cantrip. The card must teach the whole rule. */
 function spellCardHtml(entry, { mpLeft, mpMax, channeledLife = null, cantrip = false }) {
   const L = k => game.i18n.localize(`QQ.Magic.${k}`);
+  const range = t(`QQ.Range.${entry.range}`);
   const meta = cantrip
-    ? `${L("Range")}: ${entry.range}`
-    : `${L("Range")}: ${entry.range} · ${L("Cost")}: ${entry.cost} MP`;
+    ? `${L("Range")}: ${range}`
+    : `${L("Range")}: ${range} · ${L("Cost")}: ${entry.cost} ${L("MP")}`;
   const foot = cantrip
     ? L("CantripFree")
     : `${L("MPLeft")}: ${mpLeft} / ${mpMax}`;
@@ -183,9 +195,9 @@ async function pickMode(title) {
   return DialogV2.wait({
     window: { title },
     buttons: [
-      { action: "dis",    label: "Disadvantage" },
-      { action: "normal", label: "Normal", default: true },
-      { action: "adv",    label: "Advantage" }
+      { action: "dis",    label: t("QQ.Roll.Disadvantage") },
+      { action: "normal", label: t("QQ.Roll.Normal"), default: true },
+      { action: "adv",    label: t("QQ.Roll.Advantage") }
     ],
     rejectClose: false
   });
@@ -227,7 +239,7 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.weapons = ["w1", "w2", "w3"].map(k => ({ key: k, ...sys.weapons[k] }));
 
     // Magic: one cantrip slot + two spell slots, fed by the fixed lists.
-    const spellChoices   = Object.fromEntries(SPELLS.map(s => [s.id, `${s.name} (${s.cost} MP)`]));
+    const spellChoices   = Object.fromEntries(SPELLS.map(s => [s.id, `${s.name} (${s.cost} ${t("QQ.Magic.MP")})`]));
     const cantripChoices = Object.fromEntries(CANTRIPS.map(c => [c.id, c.name]));
     context.slots = [
       { key: "cantrip", label: game.i18n.localize("QQ.Magic.Cantrip"), choices: cantripChoices },
@@ -312,15 +324,15 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const stat = target.dataset.stat;
     const value = this.actor.system.stats[stat];
     const adv = value >= 4;
-    const flavor = `<b>${stat.toUpperCase()} check</b>${adv ? " — advantage (stat 4+)" : ""}<br>${CHECK_HINT}`;
+    const title = t("QQ.Roll.Check", { stat: t(`QQ.Stat.${stat}`) });
+    const flavor = `<b>${title}</b>${adv ? ` ${t("QQ.Roll.AdvStat")}` : ""}<br>${checkHint()}`;
     await postRoll(this.actor, adv ? "2d20kh" : "1d20", flavor);
   }
 
   static async #onRollAttack(event, target) {
-    const mode = await pickMode("Attack roll");
+    const mode = await pickMode(t("QQ.Roll.AttackTitle"));
     if (!mode) return;
-    const label = mode === "adv" ? " — advantage" : mode === "dis" ? " — disadvantage" : "";
-    await postRoll(this.actor, d20Formula(mode), `<b>Attack</b>${label}<br>${ATTACK_HINT}`);
+    await postRoll(this.actor, d20Formula(mode), `<b>${t("QQ.Roll.Attack")}</b>${modeLabel(mode)}<br>${attackHint()}`);
   }
 
   static async #onRollDamage(event, target) {
@@ -328,16 +340,19 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const sys = this.actor.system;
     const statVal = sys.stats[w.stat] ?? 0;
     let formula = `1${w.die} + ${statVal}`;
-    const parts = [`${w.die} + ${w.stat.toUpperCase()}`];
-    if (sys.raging) { formula += " + 2"; parts.push("rage +2"); }
-    if (sys.bonus)  { formula += ` + ${sys.bonus}`; parts.push(`bonus ${sys.bonus > 0 ? "+" : ""}${sys.bonus}`); }
-    const name = w.name || "Weapon";
-    const flavor = `<b>${name} — damage</b> (${parts.join(", ")})<br><span class="qq-hint">${w.dtype}${w.reach ? " · " + w.reach : ""}</span>`;
+    const parts = [`${w.die} + ${t(`QQ.Stat.${w.stat}`)}`];
+    if (sys.raging) { formula += " + 2"; parts.push(t("QQ.Roll.Rage")); }
+    if (sys.bonus)  { formula += ` + ${sys.bonus}`; parts.push(t("QQ.Roll.Bonus", { bonus: `${sys.bonus > 0 ? "+" : ""}${sys.bonus}` })); }
+    const name = w.name || t("QQ.Roll.Weapon");
+    const dtype = w.dtype ? t(`QQ.Weapon.Type.${w.dtype}`) : "";
+    const reach = w.reach ? t(`QQ.Weapon.Reach.${w.reach}`) : "";
+    const flavor = `<b>${t("QQ.Roll.Damage", { name })}</b> (${parts.join(", ")})<br><span class="qq-hint">${dtype}${reach ? " · " + reach : ""}</span>`;
     await postRoll(this.actor, formula, flavor);
   }
 
   static async #onRollFumble(event, target) {
-    const flavor = `<b>Fumble!</b><br><span class="qq-hint">1 weapon flies away · 2 you trip · 3 hit the scenery · 4 wide open, next hit on you lands · 5 something loud breaks · 6 perfect — wrong target</span>`;
+    const table = [1, 2, 3, 4, 5, 6].map(n => t(`QQ.Fumble.${n}`)).join(" · ");
+    const flavor = `<b>${t("QQ.Fumble.Title")}</b><br><span class="qq-hint">${table}</span>`;
     await postRoll(this.actor, "1d6", flavor);
   }
 }
@@ -371,17 +386,16 @@ class QuickQuestMonsterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   static async #onRollAttack(event, target) {
-    const mode = await pickMode("Monster attack");
+    const mode = await pickMode(t("QQ.Roll.MonsterAttackTitle"));
     if (!mode) return;
-    const label = mode === "adv" ? " — advantage" : mode === "dis" ? " — disadvantage" : "";
-    await postRoll(this.actor, d20Formula(mode), `<b>Attack</b>${label}<br>${ATTACK_HINT}`);
+    await postRoll(this.actor, d20Formula(mode), `<b>${t("QQ.Roll.Attack")}</b>${modeLabel(mode)}<br>${attackHint()}`);
   }
 
   static async #onRollDamage(event, target) {
     const a = this.actor.system.attack;
     let formula = `1${a.die}`;
     if (a.bonus) formula += ` + ${a.bonus}`;
-    const flavor = `<b>Damage</b> (${a.die}${a.bonus ? " + " + a.bonus : ""})${a.dtype ? `<br><span class="qq-hint">${a.dtype}</span>` : ""}`;
+    const flavor = `<b>${t("QQ.Roll.DamageMonster")}</b> (${a.die}${a.bonus ? " + " + a.bonus : ""})${a.dtype ? `<br><span class="qq-hint">${a.dtype}</span>` : ""}`;
     await postRoll(this.actor, formula, flavor);
   }
 }
@@ -414,9 +428,9 @@ Hooks.once("init", () => {
 
   const DSC = foundry.applications.apps?.DocumentSheetConfig ?? globalThis.DocumentSheetConfig;
   DSC.registerSheet(Actor, "quickquest", QuickQuestHeroSheet, {
-    types: ["hero"], makeDefault: true, label: "QuickQuest — Hero"
+    types: ["hero"], makeDefault: true, label: "QQ.Sheet.HeroSheet"
   });
   DSC.registerSheet(Actor, "quickquest", QuickQuestMonsterSheet, {
-    types: ["monster"], makeDefault: true, label: "QuickQuest — Monster"
+    types: ["monster"], makeDefault: true, label: "QQ.Sheet.MonsterSheet"
   });
 });

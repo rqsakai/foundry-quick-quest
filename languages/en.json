@@ -6,10 +6,106 @@
     }
   },
   "QQ": {
+    "Sheet": {
+      "HeroName": "Hero name",
+      "MonsterName": "Monster name",
+      "Race": "Race",
+      "Profession": "Profession",
+      "Life": "Life",
+      "Magic": "Magic",
+      "Defense": "Defense",
+      "Armor": "armor",
+      "Attack": "⚔ Attack d20",
+      "Raging": "Raging +2",
+      "BonusDmg": "Bonus dmg",
+      "Fumble": "Fumble d6",
+      "CheckTip": "Roll a {stat} check (advantage at 4+)",
+      "Ace": "Ace — once per session",
+      "AcePlaceholder": "Unbreakable, Final Word…",
+      "AceUsed": "Played this session",
+      "TraitMove": "Race trait & profession move",
+      "Trait": "Trait",
+      "Move": "Move",
+      "Spells": "Spells & cantrip",
+      "Gear": "Gear & coin",
+      "GearPlaceholder": "Rope, torches…",
+      "Gold": "Gold",
+      "Silver": "Silver",
+      "HeroFooter": "Hit: d20 ≥ Defense · nat 20 double · stat 4–5 = advantage on checks · channel: 2 Life per missing MP, once per fight",
+      "HeroSheet": "QuickQuest — Hero",
+      "MonsterSheet": "QuickQuest — Monster"
+    },
+    "Stat": {
+      "str": "STR",
+      "agi": "AGI",
+      "con": "CON",
+      "int": "INT"
+    },
+    "Weapon": {
+      "Weapon": "Weapon",
+      "Die": "Die",
+      "Stat": "Stat",
+      "ColType": "Type",
+      "ColReach": "Reach",
+      "RollDamage": "Roll damage",
+      "EmptyName": "—",
+      "Type": {
+        "bludgeoning": "Bludg.",
+        "cutting": "Cutting",
+        "piercing": "Piercing"
+      },
+      "Reach": {
+        "touching": "Touching",
+        "thrown nearby": "Thrown",
+        "far": "Far"
+      }
+    },
+    "Range": {
+      "touching": "touching",
+      "nearby": "nearby",
+      "far": "far"
+    },
+    "Roll": {
+      "AttackTitle": "Attack roll",
+      "MonsterAttackTitle": "Monster attack",
+      "Attack": "Attack",
+      "Check": "{stat} check",
+      "Damage": "{name} — damage",
+      "DamageMonster": "Damage",
+      "Weapon": "Weapon",
+      "Advantage": "Advantage",
+      "Disadvantage": "Disadvantage",
+      "Normal": "Normal",
+      "AdvStat": "— advantage (stat 4+)",
+      "Adv": "— advantage",
+      "Dis": "— disadvantage",
+      "Rage": "rage +2",
+      "Bonus": "bonus {bonus}",
+      "AttackHint": "Hits if ≥ target's Defense · nat 20 = double damage · nat 1 = fumble (roll d6)",
+      "CheckHint": "Easy 8 · Tricky 12 · Hard 16"
+    },
+    "Fumble": {
+      "Title": "Fumble!",
+      "1": "1 weapon flies away",
+      "2": "2 you trip",
+      "3": "3 hit the scenery",
+      "4": "4 wide open, next hit on you lands",
+      "5": "5 something loud breaks",
+      "6": "6 perfect — wrong target"
+    },
+    "Monster": {
+      "DamageType": "damage type",
+      "Damage": "🎲 Damage",
+      "Trick": "Trick — the one thing they'll remember",
+      "TrickPlaceholder": "Runs when half the pack falls…",
+      "Notes": "Notes",
+      "Footer": "Regular monsters +1/+2 · bosses +3/+4 · tougher = more Life, never more Defense"
+    },
     "Magic": {
       "Cantrip": "Cantrip",
       "Spell1": "Spell 1",
       "Spell2": "Spell 2",
+      "MP": "MP",
       "Cast": "Cast",
       "CastTip": "Spend the MP and post the spell to chat; cantrips are free",
       "Channeled": "Channeled this fight",
