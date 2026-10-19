@@ -20,8 +20,19 @@ Four stats, one die, no wrong answers.
 9. Drop hero + monster tokens in a scene, add to Combat Tracker, "roll all"
    -> heroes sort above monsters automatically (players go first).
 10. Token bars: hero bar1 = life, bar2 = mp (configure once on the prototype token).
+11. Magic box: Cantrip select lists 8 entries, Spell 1 / Spell 2 list 12 with MP cost; pick
+    one each, close and reopen the sheet -> choices persist, a Cast button sits beside each.
+12. Hero INT 2 (MP 6): Cast a 3-MP spell -> MP reads 3 and the chat card shows name, range,
+    cost, effect and "MP left: 3 / 6". Cast again -> MP 0, Ace box glows with a tooltip.
+13. Cast the cantrip 3 times -> 3 cards, MP and Life unchanged.
+14. Channeling: at MP 0 (Life 11) cast a 4-MP spell -> dialog offers 8 Life; Cancel changes
+    nothing; Channel -> Life 3, MP 0, "Channeled this fight" ticked, card carries the badge.
+    Cast again -> refused (already channeled). Untick the box, cast again at Life 3 ->
+    refused (cannot survive the cost).
+15. Before release: no "placeholder" hint in the magic box and no console warning about
+    SPELLS/CANTRIPS; the 20 entries match docs/rulebook.md.
 
-## v0.1 scope — deliberately not included yet
+## Not included yet
 - Items/compendia (weapons live as 3 rows on the sheet)
 - Automatic crit doubling (chat reminds you on the roll)
 - Bless/effects automation (use the bonus field + checkboxes, untick by hand)

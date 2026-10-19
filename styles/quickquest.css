@@ -83,6 +83,30 @@
   font-family: 'IM Fell English SC', serif; font-size: 10px; letter-spacing: .1em; color: var(--qq-spot); }
 .qq-coins input { width: 100%; text-align: center; }
 
+/* ---------- magic & cards ---------- */
+.qq-magic { gap: 5px; }
+.qq-slot { display: grid; grid-template-columns: 52px 1fr 48px; gap: 5px; align-items: center; }
+.qq-slot select { min-width: 0; }
+.qq-cast { font-size: 11px; padding: 1px 6px; box-shadow: 1.5px 1.5px 0 var(--qq-spot); }
+.qq-magic .qq-check { margin-top: 2px; }
+
+.qq-card { border: 1.5px solid #29211a; box-shadow: 2px 2px 0 var(--qq-spot, #3b5273);
+  padding: 5px 8px; margin: 2px 3px 4px 0; background: #fff9ec;
+  color: #29211a; font-family: 'Alegreya', serif; }
+.qq-card-title { font-family: 'IM Fell English SC', serif; font-size: 15px; letter-spacing: .08em; color: var(--qq-spot, #3b5273); }
+.qq-card-meta, .qq-card-foot { font-family: 'Alegreya Sans', sans-serif; font-size: 11px; color: #6b6155; }
+.qq-card-body { font-size: 13px; margin: 3px 0; }
+.qq-card-badge { display: inline-block; margin-top: 3px; padding: 0 6px; border: 1.5px solid #29211a;
+  font-family: 'IM Fell English SC', serif; font-size: 11px; letter-spacing: .06em;
+  background: var(--qq-spot, #3b5273); color: #f6efdf; }
+
+/* Ace nudge: out of MP and the Ace is still unplayed */
+.qq-ace-ready { outline: 2px solid var(--qq-spot); outline-offset: 2px; animation: qq-ace-pulse 2.4s ease-in-out infinite; }
+@keyframes qq-ace-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--qq-spot); }
+  50%      { box-shadow: 0 0 0 4px #3b527333; }
+}
+
 /* ---------- footer & chat ---------- */
 .qq-remind { border-top: 3px double var(--qq-ink); padding-top: 4px;
   font-family: 'Alegreya Sans', sans-serif; font-size: 10px; color: #6b6155; }

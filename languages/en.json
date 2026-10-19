@@ -4,5 +4,31 @@
       "hero": "Hero",
       "monster": "Monster"
     }
+  },
+  "QQ": {
+    "Magic": {
+      "Cantrip": "Cantrip",
+      "Spell1": "Spell 1",
+      "Spell2": "Spell 2",
+      "Cast": "Cast",
+      "CastTip": "Spend the MP and post the spell to chat; cantrips are free",
+      "Channeled": "Channeled this fight",
+      "ChanneledTip": "Short on MP? Pay 2 Life per missing MP, once per fight. Untick when the fight ends.",
+      "ChannelTitle": "Channel your blood?",
+      "ChannelBody": "You are {missing} MP short. Channel {lifeCost} Life to cast {spell}?",
+      "ChannelButton": "Channel",
+      "Cancel": "Cancel",
+      "AlreadyChanneled": "You already channeled this fight. Untick the box when the fight ends.",
+      "CannotSurvive": "Channeling would cost {lifeCost} Life and you have {life}. You cannot survive the cost.",
+      "Range": "Range",
+      "Cost": "Cost",
+      "MPLeft": "MP left",
+      "CantripFree": "Cantrip, free",
+      "ChanneledBadge": "Channeled",
+      "Life": "Life",
+      "AceReadyTip": "Out of MP — your Ace is ready. Play it when the moment comes.",
+      "PlaceholderHint": "Spell list is placeholder — fill SPELLS/CANTRIPS from docs/rulebook.md",
+      "Empty": "—"
+    }
   }
 }

@@ -77,7 +77,7 @@
   </section>
 
   <section class="qq-twocol">
-    <div class="qq-box">
+    <div class="qq-box{{#if system.aceReady}} qq-ace-ready{{/if}}"{{#if system.aceReady}} title="{{localize 'QQ.Magic.AceReadyTip'}}"{{/if}}>
       <span class="qq-boxlbl">Ace — once per session</span>
       <input type="text" name="system.ace.name" value="{{system.ace.name}}" placeholder="Unbreakable, Final Word…"/>
       <label class="qq-check"><input type="checkbox" name="system.ace.used" {{checked system.ace.used}}/> Played this session</label>
@@ -90,10 +90,27 @@
   </section>
 
   <section class="qq-twocol">
-    <div class="qq-box">
+    <div class="qq-box qq-magic">
       <span class="qq-boxlbl">Spells &amp; cantrip</span>
-      <input type="text" name="system.cantrip" value="{{system.cantrip}}" placeholder="Cantrip"/>
-      <textarea name="system.spells" rows="3" placeholder="Spells…">{{system.spells}}</textarea>
+      {{#each slots as |slot|}}
+      <div class="qq-slot">
+        <span class="qq-lbl">{{slot.label}}</span>
+        <select name="system.magic.{{slot.key}}">
+          {{selectOptions slot.choices selected=slot.value blank=(localize "QQ.Magic.Empty")}}
+        </select>
+        {{#if slot.entry}}
+        <button type="button" class="qq-cast" data-action="castSpell" data-slot="{{slot.key}}"
+                title="{{localize 'QQ.Magic.CastTip'}}">{{localize "QQ.Magic.Cast"}}</button>
+        {{else}}
+        <span></span>
+        {{/if}}
+      </div>
+      {{/each}}
+      <label class="qq-check" title="{{localize 'QQ.Magic.ChanneledTip'}}">
+        <input type="checkbox" name="system.magic.channeled" {{checked system.magic.channeled}}/>
+        {{localize "QQ.Magic.Channeled"}}
+      </label>
+      {{#if magicPlaceholder}}<span class="qq-hint">{{localize "QQ.Magic.PlaceholderHint"}}</span>{{/if}}
     </div>
     <div class="qq-box">
       <span class="qq-boxlbl">Gear &amp; coin</span>
