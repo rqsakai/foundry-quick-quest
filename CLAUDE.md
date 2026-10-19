@@ -88,7 +88,8 @@ module/quickquest.mjs       everything: DataModels → roll helpers → hero she
 templates/hero-sheet.hbs    hero markup, plain named inputs
 templates/monster-sheet.hbs monster markup
 styles/quickquest.css       the "letterpress" look (see below)
-languages/en.json           TYPES.Actor labels + QQ.Magic.* strings; older sheet text still hardcoded
+languages/en.json           ALL UI strings under QQ.* (+ TYPES.Actor); pt-BR.json mirrors it 1:1
+docs/glossary.md            EN → pt-BR term table every string follows
 README.md                   install notes + the manual test checklist (our only test suite)
 ```
 
@@ -128,6 +129,11 @@ class XSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 - Templates are **plain named inputs**: `name="system.x.y"`, `{{checked …}}` for booleans,
   `{{#if (eq a "b")}}selected{{/if}}` for selects. Only Foundry's built-in helpers;
   no custom Handlebars helpers are registered.
+- **Every user-visible string is a key** in `languages/en.json` **and** `languages/pt-BR.json`
+  (identical key sets; groups `QQ.Sheet/Stat/Weapon/Range/Roll/Fumble/Monster/Magic`).
+  Templates use `{{localize}}` (+ `concat` for stat keys); code uses the `t(key, data)` helper.
+  Hints are built at call time (`attackHint()`), never as module-level constants. Dice names,
+  "QuickQuest" and spell content are not keys. Wording follows `docs/glossary.md`.
 - Rolls go through `postRoll(actor, formula, flavor)` → `Roll` + `toMessage`. Cards without
   dice (spells) go through `postCard(actor, html)`. Adv/dis via `pickMode(title)`
   (`DialogV2.wait`, buttons dis/normal/adv, `rejectClose: false`).
@@ -191,16 +197,23 @@ All new UI must match. Class prefix `qq-`.
 1. Bump `"version"` in `system.json` **and** the version in the `README.md` header.
 2. Commit and push. **Tag/release from that final commit** (v0.1.0 was tagged one commit
    early — don't repeat).
-3. Build the zip from the repo root. `system.json` must sit at the zip root.
+3. Check language-file parity (must print `[]`):
+   ```bash
+   python3 -c "import json;a=json.load(open('languages/en.json'));b=json.load(open('languages/pt-BR.json'))
+   def k(d,p=''):
+     return {p+x for x,v in d.items() if not isinstance(v,dict)}|{y for x,v in d.items() if isinstance(v,dict) for y in k(v,p+x+'.')}
+   print(sorted(k(a)^k(b)))"
+   ```
+4. Build the zip from the repo root. `system.json` must sit at the zip root.
    ```bash
    zip -r quickquest.zip . -x ".git/*" "node_modules/*" "*.zip" ".remember/*" ".claude/*" "CLAUDE.md" "deploy.sh" ".gitignore" ".specify/*" "specs/*" "BACKLOG.md"
    ```
-4. Publish — **both assets are mandatory**; the loose `system.json` is the manifest Foundry
+5. Publish — **both assets are mandatory**; the loose `system.json` is the manifest Foundry
    polls for updates:
    ```bash
    gh release create vX.Y.Z --title "QuickQuest X.Y.Z" --notes "..." system.json quickquest.zip
    ```
-5. Delete the local zip (it is git-ignored, but don't let it linger).
+6. Delete the local zip (it is git-ignored, but don't let it linger).
 
 ---
 
@@ -229,6 +242,8 @@ with acceptance criteria. Read it before proposing or scoping anything. Summary 
 - [ ] New button? `data-action` in the template **and** entry in `DEFAULT_OPTIONS.actions`.
 - [ ] New field? `defineSchema()`. New computed value? `prepareDerivedData()`.
 - [ ] New UI? `qq-` classes, letterpress tokens, `var(--qq-spot)`, IM Fell for labels.
+- [ ] New string? Add the key to `languages/en.json` **and** `languages/pt-BR.json`; use
+      `{{localize}}` or `t()`; pick wording from `docs/glossary.md`.
 - [ ] New roll? Goes through `postRoll()`, carries a `.qq-hint` rules reminder.
 - [ ] Does it introduce timers, durations or auto-expiring effects? → Use a checkbox.
 - [ ] Touched `system.json`? Remind the user: Return to Setup → relaunch world.

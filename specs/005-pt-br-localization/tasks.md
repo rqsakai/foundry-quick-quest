@@ -22,7 +22,7 @@ Repository root: `languages/`, `templates/`, `module/quickquest.mjs`, `styles/qu
 
 ## Phase 1: Setup
 
-- [ ] T001 Restructure `languages/en.json`: keep `TYPES.Actor` and `QQ.Magic` as they are and add
+- [X] T001 Restructure `languages/en.json`: keep `TYPES.Actor` and `QQ.Magic` as they are and add
       the groups `QQ.Sheet`, `QQ.Stat`, `QQ.Weapon` (with nested `Type` and `Reach` objects keyed
       by stored values, including the key `"thrown nearby"`), `QQ.Range`, `QQ.Roll`, `QQ.Fumble`,
       `QQ.Monster` with exactly the keys and English values in contracts/i18n-keys.md.
@@ -46,7 +46,7 @@ printing nothing.
 
 ### Implementation for User Story 1
 
-- [ ] T002 [P] [US1] In `templates/hero-sheet.hbs` replace every literal with `{{localize}}`:
+- [X] T002 [P] [US1] In `templates/hero-sheet.hbs` replace every literal with `{{localize}}`:
       name placeholder → `QQ.Sheet.HeroName`; Race/Profession labels; stat button text →
       `{{localize (concat "QQ.Stat." key)}}` and its `title` → `{{localize "QQ.Sheet.CheckTip"
       stat=(localize (concat "QQ.Stat." key))}}`; Life/Magic/Defense/armor; the Attack, Raging,
@@ -56,11 +56,11 @@ printing nothing.
       `QQ.Weapon.EmptyName`; Ace box label, placeholder and checkbox; trait/move box label and
       placeholders; "Spells & cantrip" → `QQ.Sheet.Spells`; gear box label, placeholder, Gold,
       Silver; footer → `QQ.Sheet.HeroFooter`.
-- [ ] T003 [P] [US1] In `templates/monster-sheet.hbs` replace: name placeholder →
+- [X] T003 [P] [US1] In `templates/monster-sheet.hbs` replace: name placeholder →
       `QQ.Sheet.MonsterName`; Life/Defense; Attack button → `QQ.Sheet.Attack`; damage type
       placeholder → `QQ.Monster.DamageType`; damage button title → `QQ.Weapon.RollDamage` and text
       → `QQ.Monster.Damage`; Trick label and placeholder; Notes; footer → `QQ.Monster.Footer`.
-- [ ] T004 [US1] In `module/quickquest.mjs`: turn `ATTACK_HINT` and `CHECK_HINT` into functions
+- [X] T004 [US1] In `module/quickquest.mjs`: turn `ATTACK_HINT` and `CHECK_HINT` into functions
       `attackHint()` / `checkHint()` that localize `QQ.Roll.AttackHint` / `QQ.Roll.CheckHint`
       at call time (constants evaluate before i18n is ready); in `pickMode()` localize the three
       button labels (`QQ.Roll.Disadvantage/Normal/Advantage`); in `#onRollCheck` build the title
@@ -75,7 +75,7 @@ printing nothing.
       `QQ.Roll.DamageMonster`; `spellCardHtml` range → `QQ.Range.<range>`; sheet registration
       labels → `QQ.Sheet.HeroSheet` / `QQ.Sheet.MonsterSheet` (these are localized by Foundry
       when given a key string).
-- [ ] T005 [US1] Run the template grep from quickstart.md prerequisites; fix any remaining
+- [X] T005 [US1] Run the template grep from quickstart.md prerequisites; fix any remaining
       literal. Run `node --check module/quickquest.mjs`.
 
 **Checkpoint**: English output unchanged; zero literals in templates.
@@ -90,7 +90,7 @@ printing nothing.
 
 ### Implementation for User Story 2
 
-- [ ] T006 [P] [US2] Create `docs/glossary.md`: table of game terms → pt-BR (draft, owner to
+- [X] T006 [P] [US2] Create `docs/glossary.md`: table of game terms → pt-BR (draft, owner to
       approve): Hero Herói · Monster Monstro · Life Vida · Magic/MP Magia / PM · Defense Defesa ·
       Check Teste · Attack Ataque · Damage Dano · Advantage Vantagem · Disadvantage Desvantagem ·
       Raging Fúria · Fumble Falha · Ace Ace (keep) · Trait Traço · Move Manobra · Profession
@@ -99,14 +99,14 @@ printing nothing.
       · bludgeoning/cutting/piercing impacto/corte/perfuração · thrown arremesso · Easy/Tricky/Hard
       Fácil/Complicado/Difícil · dice names keep · QuickQuest keep. Note that strings are a draft
       until the owner signs off.
-- [ ] T007 [P] [US2] Create `languages/pt-BR.json` with the identical key set to `en.json`
+- [X] T007 [P] [US2] Create `languages/pt-BR.json` with the identical key set to `en.json`
       (including `TYPES.Actor` → Herói/Monstro and all `QQ.Magic.*`), values following the
       glossary.
-- [ ] T008 [P] [US2] In `system.json` `languages`, add `{ "lang": "pt-BR", "name": "Português
+- [X] T008 [P] [US2] In `system.json` `languages`, add `{ "lang": "pt-BR", "name": "Português
       (Brasil)", "path": "languages/pt-BR.json" }`. Do not change `version`.
-- [ ] T009 [P] [US2] In `styles/quickquest.css`: `.qq-wrow` grid columns `1fr 56px 62px 92px
+- [X] T009 [P] [US2] In `styles/quickquest.css`: `.qq-wrow` grid columns `1fr 56px 62px 92px
       100px 34px`; `.qq-slot` first column `64px`.
-- [ ] T010 [US2] Run the parity one-liner (expects `[]`) and `python3 -c "import
+- [X] T010 [US2] Run the parity one-liner (expects `[]`) and `python3 -c "import
       json;json.load(open('languages/pt-BR.json'))"`.
 
 **Checkpoint**: Both files valid, parity exact, system registers the language.
@@ -124,10 +124,10 @@ printing nothing.
 
 ## Phase 6: Polish & Cross-Cutting
 
-- [ ] T012 [P] In `README.md`, add step 16: switch the client to Português (Brasil), open both
+- [X] T012 [P] In `README.md`, add step 16: switch the client to Português (Brasil), open both
       sheets and roll each card type; everything in pt-BR, nothing clipped; back to English looks
       as before.
-- [ ] T013 [P] In `CLAUDE.md`: in Architecture, `languages/` now holds en + pt-BR with full key
+- [X] T013 [P] In `CLAUDE.md`: in Architecture, `languages/` now holds en + pt-BR with full key
       parity; in "Before you change anything", add "New string? Key in `languages/en.json` AND
       `languages/pt-BR.json`, `{{localize}}` / `game.i18n`"; in "Shipping a release", add the
       parity one-liner before building the zip; in Hard rules → Other sheet rules, note the
