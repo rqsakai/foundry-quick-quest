@@ -4,7 +4,7 @@
    ============================================================ */
 
 const fields = foundry.data.fields;
-const { HandlebarsApplicationMixin, DialogV2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin, DialogV2, ApplicationV2 } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
 /* ------------------------------------------------------------
@@ -49,6 +49,55 @@ function magicEntry(id) {
 }
 
 /* ------------------------------------------------------------
+   HERO DATA — exactly 6 races and 5 professions (docs/rulebook.md).
+   Heroes store only the id; trait, move, Ace and kit are looked up.
+   ------------------------------------------------------------ */
+
+const RACES = Object.freeze([
+  { id: "human",    name: "Human",    trait: "Lucky. Once per session, reroll any die." },
+  { id: "elf",      name: "Elf",      trait: "Night vision. You see in the dark as if it were dim light." },
+  { id: "dwarf",    name: "Dwarf",    trait: "Stone sense. You know when rock is unstable, hollow, or hiding a door." },
+  { id: "halfling", name: "Halfling", trait: "Small and quick. Hide behind almost anything; squeeze through gaps others can't." },
+  { id: "orc",      name: "Orc",      trait: "Fierce. Once per fight, add +2 to one damage roll." },
+  { id: "gnome",    name: "Gnome",    trait: "Small-speech. Talk with animals no bigger than a dog." }
+]);
+
+const weapon = (name, die, stat, dtype, reach) => ({ name, die, stat, dtype, reach });
+
+// kit.armor: clothes 0 · leather 1 · chainmail 2 · plate 3 · shield +1 (Defense = 10 + armor)
+const PROFESSIONS = Object.freeze([
+  { id: "warrior", name: "Warrior", caster: false, spellPicks: 0, fixedSpell: null,
+    move: "Guard. When an attack would hit someone next to you, take it instead.",
+    ace: { name: "Unbreakable", trigger: "you drop to 0 Life",
+      effect: "You don't fall. You stay standing at 1 Life, and nothing can take you below 1 until the fight is over. When it ends, so do you — you collapse and need treating like anyone else." },
+    kit: { weapons: [weapon("Sword", "d6", "str", "cutting", "touching")], armor: 3, gear: "Shield, chainmail", gold: 20 } },
+  { id: "barbarian", name: "Barbarian", caster: false, spellPicks: 0, fixedSpell: null,
+    move: "Rage. Once per fight: +2 damage, −2 Defense for the rest of it.",
+    ace: { name: "Blood Frenzy", trigger: "you're at half Life or less",
+      effect: "For the rest of the fight, every attack of yours that lands rolls damage twice and takes the higher. You also take double damage from everything. There is no calling it off." },
+    kit: { weapons: [weapon("Greataxe", "d8", "str", "cutting", "touching")], armor: 1, gear: "Leather armor", gold: 10 } },
+  { id: "rogue", name: "Rogue", caster: false, spellPicks: 0, fixedSpell: null,
+    move: "Sneak Attack. Attacking someone who hasn't noticed you: 2d20 take the better, +2 damage.",
+    ace: { name: "The Opening", trigger: "you can see the enemy and they haven't seen you move",
+      effect: "You've been waiting the whole fight. Your attack hits automatically and counts as a critical — double damage, plus your Sneak Attack bonus. No roll. You just say where the dagger goes." },
+    kit: { weapons: [weapon("Dagger", "d4", "agi", "cutting", "thrown nearby"), weapon("Dagger", "d4", "agi", "cutting", "thrown nearby"), weapon("Bow", "d6", "agi", "piercing", "far")],
+      armor: 1, gear: "Leather armor, lockpicks, rope (50 ft)", gold: 15 } },
+  { id: "wizard", name: "Wizard", caster: true, spellPicks: 2, fixedSpell: null,
+    move: "Magic Points = INT × 3. Knows two spells.",
+    ace: { name: "Final Word", trigger: "your Magic Points are at 0",
+      effect: "Empty, exhausted, and still standing. Cast any spell you know, for free, at double effect — double damage, double healing, double duration." },
+    kit: { weapons: [weapon("Staff", "d4", "str", "bludgeoning", "touching")], armor: 0, gear: "Clothes, spellbook", gold: 10 } },
+  { id: "healer", name: "Healer", caster: true, spellPicks: 1, fixedSpell: "healing-hands",
+    move: "Magic Points = INT × 3. Knows Healing Hands + one more.",
+    ace: { name: "Second Breath", trigger: "at least one ally is at 0 Life",
+      effect: "Every ally you can see gets back on their feet and recovers half their missing Life. Costs no Magic Points." },
+    kit: { weapons: [weapon("Mace", "d6", "str", "bludgeoning", "touching")], armor: 1, gear: "Leather armor, bandages (3 treatments)", gold: 15 } }
+]);
+
+function raceById(id)       { return id ? RACES.find(r => r.id === id) ?? null : null; }
+function professionById(id) { return id ? PROFESSIONS.find(p => p.id === id) ?? null : null; }
+
+/* ------------------------------------------------------------
    DATA MODELS
    ------------------------------------------------------------ */
 
@@ -79,14 +128,11 @@ class HeroData extends foundry.abstract.TypeDataModel {
         value: new fields.NumberField({ required: true, integer: true, initial: 0 })
       }),
       armor: new fields.NumberField({ required: true, integer: true, min: 0, max: 4, initial: 0 }),
-      race:       new fields.StringField({ initial: "" }),
-      trait:      new fields.StringField({ initial: "" }),
-      profession: new fields.StringField({ initial: "" }),
-      move:       new fields.StringField({ initial: "" }),
+      race:       new fields.StringField({ initial: "" }),   // a RACES id or ""
+      profession: new fields.StringField({ initial: "" }),   // a PROFESSIONS id or ""
+      // Trait, move and the Ace's name/trigger/effect are looked up from RACES / PROFESSIONS.
       ace: new fields.SchemaField({
-        name:    new fields.StringField({ initial: "" }),
-        trigger: new fields.StringField({ initial: "" }),   // when it may be played, player-typed
-        used:    new fields.BooleanField({ initial: false }) // ticked by Play Ace; a human unticks
+        used: new fields.BooleanField({ initial: false })    // ticked by Play Ace; a human unticks
       }),
       magic: new fields.SchemaField({
         cantrip:   new fields.StringField({ initial: "" }),   // a CANTRIPS id or "" (empty slot)
@@ -107,11 +153,14 @@ class HeroData extends foundry.abstract.TypeDataModel {
   }
 
   prepareDerivedData() {
-    this.life.max = 7 + this.stats.con * 2;   // Life = 7 + CON × 2
-    this.mp.max   = this.stats.int * 3;       // MP = INT × 3
-    this.defense  = 10 + this.armor;          // Defense = 10 + armor
-    this.initiativeRank = 2;                  // players act before monsters
-    this.aceReady = this.mp.value === 0 && !this.ace.used; // out of MP → nudge the Ace
+    this.raceData       = raceById(this.race);
+    this.professionData = professionById(this.profession);
+    this.life.max = 7 + this.stats.con * 2;                              // Life = 7 + CON × 2
+    this.mp.max   = this.professionData?.caster ? this.stats.int * 3 : 0; // MP = INT × 3, casters only
+    this.defense  = 10 + this.armor - (this.raging ? 2 : 0);             // Defense = 10 + armor, −2 raging
+    this.initiativeRank = 2;                                             // players act before monsters
+    // "At 0 MP, your Ace wakes up" — the Wizard's Final Word.
+    this.aceReady = this.profession === "wizard" && this.mp.value === 0 && !this.ace.used;
   }
 }
 
@@ -295,7 +344,8 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       playAce:     QuickQuestHeroSheet.#onPlayAce,
       treatWounds: QuickQuestHeroSheet.#onTreatWounds,
       drinkPotion: QuickQuestHeroSheet.#onDrinkPotion,
-      weaponCard:  QuickQuestHeroSheet.#onWeaponCard
+      weaponCard:  QuickQuestHeroSheet.#onWeaponCard,
+      openWizard:  QuickQuestHeroSheet.#onOpenWizard
     }
   };
 
@@ -319,6 +369,10 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       { key: "spell2",  label: game.i18n.localize("QQ.Magic.Spell2"),  choices: spellChoices }
     ].map(s => ({ ...s, value: sys.magic[s.key], entry: magicEntry(sys.magic[s.key]) }));
     context.magicPlaceholder = MAGIC_IS_PLACEHOLDER;
+
+    // Race and profession are fixed selects; the sheet shows the book's text read-only.
+    context.raceChoices       = Object.fromEntries(RACES.map(r => [r.id, r.name]));
+    context.professionChoices = Object.fromEntries(PROFESSIONS.map(p => [p.id, p.name]));
     return context;
   }
 
@@ -430,14 +484,20 @@ class QuickQuestHeroSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   /* ---- teaching buttons ---- */
 
   static async #onPlayAce(event, target) {
-    const ace = this.actor.system.ace;
-    if (!ace.name || ace.used) return;
+    const sys = this.actor.system;
+    const ace = sys.professionData?.ace;
+    if (!ace || sys.ace.used) return;
     await this.actor.update({ "system.ace.used": true });
     return postCard(this.actor, `<div class="qq-card qq-card-ace">
       <div class="qq-card-title">${t("QQ.Ace.Played")}: ${ace.name}</div>
-      ${ace.trigger ? `<div class="qq-card-body">${ace.trigger}</div>` : ""}
+      <div class="qq-card-meta">${t("QQ.Sheet.PlaysWhen", { trigger: ace.trigger })}</div>
+      <div class="qq-card-body">${ace.effect}</div>
       <div class="qq-card-foot">${t("QQ.Ace.OncePerSession")}</div>
     </div>`);
+  }
+
+  static #onOpenWizard(event, target) {
+    new QuickQuestCreationWizard({ actor: this.actor, mode: "rebuild" }).render(true);
   }
 
   static async #onTreatWounds(event, target) {
@@ -524,6 +584,220 @@ class QuickQuestMonsterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 }
 
 /* ------------------------------------------------------------
+   CREATION WIZARD — five steps; writes the actor only on Finish
+   ------------------------------------------------------------ */
+
+const STAT_KEYS = ["str", "agi", "con", "int"];
+const POINTS_TO_SPEND = 6; // every stat starts at 1; the book's 10-point spread
+
+class QuickQuestCreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
+
+  static DEFAULT_OPTIONS = {
+    classes: ["quickquest", "qq-hero", "qq-wizard"],
+    position: { width: 560, height: "auto" },
+    window: { title: "QQ.Wizard.Title", resizable: false },
+    actions: {
+      statInc: QuickQuestCreationWizard.#onStat,
+      statDec: QuickQuestCreationWizard.#onStat,
+      pick:    QuickQuestCreationWizard.#onPick,
+      back:    QuickQuestCreationWizard.#onBack,
+      next:    QuickQuestCreationWizard.#onNext,
+      finish:  QuickQuestCreationWizard.#onFinish,
+      cancel:  QuickQuestCreationWizard.#onCancel
+    }
+  };
+
+  static PARTS = {
+    body: { template: "systems/quickquest/templates/creation-wizard.hbs" }
+  };
+
+  constructor({ actor, mode = "create", ...options } = {}) {
+    super(options);
+    this.actor = actor;
+    this.mode = mode;          // "create" resets the hero; "rebuild" keeps Life, MP, coins, gear
+    this.step = 1;
+    this.choices = this.#initialChoices();
+    this.#applySpellDefaults();
+  }
+
+  /* ---- state ---- */
+
+  #initialChoices() {
+    const def = { name: "", stats: { str: 3, agi: 3, con: 2, int: 2 }, race: "human",
+                  profession: "warrior", cantrip: "spark", spell1: "", spell2: "" };
+    if (this.mode !== "rebuild") return def;
+    const sys = this.actor.system;
+    return {
+      name: this.actor.name,
+      stats: Object.fromEntries(STAT_KEYS.map(k => [k, sys.stats[k]])),
+      race: sys.raceData ? sys.race : def.race,
+      profession: sys.professionData ? sys.profession : def.profession,
+      cantrip: magicEntry(sys.magic.cantrip) ? sys.magic.cantrip : def.cantrip,
+      spell1: sys.magic.spell1,
+      spell2: sys.magic.spell2
+    };
+  }
+
+  #prof() { return professionById(this.choices.profession); }
+  #spent() { return STAT_KEYS.reduce((sum, k) => sum + this.choices.stats[k], 0) - STAT_KEYS.length; }
+
+  /** Casters always leave with legal spells; the book's ready-made heroes are the defaults. */
+  #applySpellDefaults() {
+    const prof = this.#prof(), c = this.choices;
+    if (!prof?.caster) { c.spell1 = ""; c.spell2 = ""; return; }
+    const isSpell = id => SPELLS.some(s => s.id === id);
+    if (prof.fixedSpell) c.spell1 = prof.fixedSpell;
+    else if (!isSpell(c.spell1)) c.spell1 = "fireball";
+    if (!isSpell(c.spell2) || c.spell2 === c.spell1) {
+      c.spell2 = prof.fixedSpell ? "bless" : (c.spell1 === "summon-lightning" ? "fireball" : "summon-lightning");
+    }
+  }
+
+  #spellProblem() {
+    const prof = this.#prof();
+    if (!prof?.caster) return null;
+    const slots = [this.choices.spell1, this.choices.spell2];
+    const valid    = slots.every(id => SPELLS.some(s => s.id === id));
+    const distinct = new Set(slots).size === slots.length;
+    const fixedOk  = !prof.fixedSpell || this.choices.spell1 === prof.fixedSpell;
+    return (valid && distinct && fixedOk) ? null : t("QQ.Wizard.NeedSpells", { n: prof.spellPicks });
+  }
+
+  #valid(step = this.step) {
+    const s = this.choices.stats;
+    switch (step) {
+      case 1: return this.#spent() === POINTS_TO_SPEND && STAT_KEYS.every(k => s[k] >= 1 && s[k] <= 5);
+      case 2: return !!raceById(this.choices.race);
+      case 3: return !!this.#prof();
+      case 4: return !!magicEntry(this.choices.cantrip) && !this.#spellProblem();
+      default: return true;
+    }
+  }
+
+  /* ---- rendering ---- */
+
+  async _prepareContext(options) {
+    const c = this.choices, prof = this.#prof(), race = raceById(c.race);
+    const spent = this.#spent();
+    const spellLabel = s => `${s.name} (${s.cost} ${t("QQ.Magic.MP")})`;
+    const spellChoices = Object.fromEntries(SPELLS.map(s => [s.id, spellLabel(s)]));
+    const pickSlots = prof?.caster
+      ? [...Array(prof.spellPicks)].map((_, i) => {
+          const key = prof.fixedSpell ? `spell${i + 2}` : `spell${i + 1}`;
+          return { key, value: c[key], choices: spellChoices, entry: magicEntry(c[key]) };
+        })
+      : [];
+    return {
+      step: this.step,
+      canNext: this.#valid(),
+      spent,
+      stats: STAT_KEYS.map(k => ({
+        key: k, label: t(`QQ.Stat.${k}`), value: c.stats[k],
+        canInc: c.stats[k] < 5 && spent < POINTS_TO_SPEND, canDec: c.stats[k] > 1
+      })),
+      races: RACES.map(r => ({ ...r, selected: r.id === c.race })),
+      professions: PROFESSIONS.map(p => ({
+        ...p, selected: p.id === c.profession,
+        aceLine: t("QQ.Wizard.AceLine", { name: p.ace.name, trigger: p.ace.trigger }),
+        kitLine: t("QQ.Wizard.KitLine", { kit: [...p.kit.weapons.map(w => w.name), p.kit.gear, `${p.kit.gold} ${t("QQ.Sheet.Gold").toLowerCase()}`].join(", ") }),
+        mpLine: t(p.caster ? "QQ.Wizard.HasMP" : "QQ.Wizard.NoMP")
+      })),
+      cantrips: CANTRIPS.map(x => ({ ...x, selected: x.id === c.cantrip })),
+      caster: !!prof?.caster,
+      fixedSpell: prof?.fixedSpell ? magicEntry(prof.fixedSpell) : null,
+      spellSlots: pickSlots,
+      spellProblem: this.#spellProblem(),
+      name: c.name,
+      namePlaceholder: prof?.name ?? "",
+      summary: (prof && race) ? {
+        raceName: race.name, profName: prof.name,
+        stats: STAT_KEYS.map(k => `${t(`QQ.Stat.${k}`)} ${c.stats[k]}`).join(" · "),
+        life: 7 + c.stats.con * 2,
+        mp: prof.caster ? c.stats.int * 3 : 0,
+        defense: 10 + prof.kit.armor,
+        weapons: prof.kit.weapons.map(w => `${w.name} ${w.die}+${t(`QQ.Stat.${w.stat}`)}`).join(", "),
+        magic: [c.cantrip, c.spell1, c.spell2].map(id => magicEntry(id)?.name).filter(Boolean).join(", ")
+      } : null
+    };
+  }
+
+  /** Selects and the name input are not actions; read them on change. */
+  _onRender(context, options) {
+    super._onRender(context, options);
+    this.element.querySelectorAll("[data-field]").forEach(el => {
+      el.addEventListener("change", () => {
+        this.choices[el.dataset.field] = el.value;
+        this.render();
+      });
+    });
+  }
+
+  /* ---- actions ---- */
+
+  static #onStat(event, target) {
+    const k = target.dataset.stat;
+    const delta = target.dataset.action === "statInc" ? 1 : -1;
+    const next = this.choices.stats[k] + delta;
+    if (next < 1 || next > 5) return;
+    if (delta > 0 && this.#spent() >= POINTS_TO_SPEND) return;
+    this.choices.stats[k] = next;
+    this.render();
+  }
+
+  static #onPick(event, target) {
+    const { field, value } = target.dataset;
+    this.choices[field] = value;
+    if (field === "profession") this.#applySpellDefaults();
+    this.render();
+  }
+
+  static #onBack()   { if (this.step > 1) { this.step--; this.render(); } }
+  static #onNext()   { if (this.step < 5 && this.#valid()) { this.step++; this.render(); } }
+  static #onCancel() { this.close(); }   // nothing was written
+
+  static async #onFinish() {
+    const bad = [1, 2, 3, 4].find(s => !this.#valid(s));
+    if (bad) { this.step = bad; return this.render(); }
+
+    const c = this.choices, prof = this.#prof(), sys = this.actor.system;
+    const weapons = {};
+    ["w1", "w2", "w3"].forEach((k, i) => {
+      weapons[k] = prof.kit.weapons[i] ? { ...prof.kit.weapons[i] }
+                                       : { name: "", die: "d6", stat: "str", dtype: "cutting", reach: "touching" };
+    });
+    const lifeMax = 7 + c.stats.con * 2;
+    const mpMax   = prof.caster ? c.stats.int * 3 : 0;
+
+    const update = {
+      name: c.name.trim() || prof.name,
+      "system.stats": { ...c.stats },
+      "system.race": c.race,
+      "system.profession": c.profession,
+      "system.armor": prof.kit.armor,
+      "system.weapons": weapons,
+      "system.magic.cantrip": c.cantrip,
+      "system.magic.spell1": prof.caster ? c.spell1 : "",
+      "system.magic.spell2": prof.caster ? c.spell2 : ""
+    };
+    if (this.mode === "create") {
+      Object.assign(update, {
+        "system.gear": prof.kit.gear, "system.gold": prof.kit.gold, "system.silver": 0, "system.bonus": 0,
+        "system.life.value": lifeMax, "system.mp.value": mpMax,
+        "system.ace.used": false, "system.raging": false, "system.treated": false, "system.magic.channeled": false
+      });
+    } else {
+      // Rebuild keeps the player's Life, MP, coins and gear; only clamps to the new maxima.
+      update["system.life.value"] = Math.min(sys.life.value, lifeMax);
+      update["system.mp.value"]   = Math.min(sys.mp.value, mpMax);
+    }
+
+    await this.actor.update(update);
+    await this.close();
+    if (!this.actor.sheet.rendered) this.actor.sheet.render(true);
+  }
+}
+
+/* ------------------------------------------------------------
    REGISTRATION
    ------------------------------------------------------------ */
 
@@ -535,6 +809,16 @@ Hooks.once("init", () => {
     throw new Error("QuickQuest | SPELLS must have 12 entries, CANTRIPS 8");
   }
   if (MAGIC_IS_PLACEHOLDER) console.warn("QuickQuest | SPELLS/CANTRIPS are placeholders");
+  if (RACES.length !== 6 || PROFESSIONS.length !== 5) {
+    throw new Error("QuickQuest | RACES must have 6 entries, PROFESSIONS 5");
+  }
+
+  // A brand-new hero opens the guided creation for whoever created it.
+  // Pack imports can pass { qqSkipWizard: true } to stay quiet.
+  Hooks.on("createActor", (actor, options, userId) => {
+    if (actor.type !== "hero" || userId !== game.user.id || options?.qqSkipWizard) return;
+    new QuickQuestCreationWizard({ actor, mode: "create" }).render(true);
+  });
 
   // Chat-card buttons (the fumble prompt on a natural 1). v13 renamed the hook and passes an
   // HTMLElement instead of jQuery; register only the matching one.

@@ -21,12 +21,8 @@
       "Fumble": "Fumble d6",
       "CheckTip": "Roll a {stat} check (advantage at 4+)",
       "Ace": "Ace — once per session",
-      "AcePlaceholder": "Unbreakable, Final Word…",
-      "AceTriggerPlaceholder": "when an ally falls…",
       "AceUsed": "Played this session",
       "TraitMove": "Race trait & profession move",
-      "Trait": "Trait",
-      "Move": "Move",
       "Spells": "Spells & cantrip",
       "Gear": "Gear & coin",
       "GearPlaceholder": "Rope, torches…",
@@ -34,7 +30,11 @@
       "Silver": "Silver",
       "HeroFooter": "Hit: d20 ≥ Defense · nat 20 double · stat 4–5 = advantage on checks · channel: 2 Life per missing MP, once per fight",
       "HeroSheet": "QuickQuest — Hero",
-      "MonsterSheet": "QuickQuest — Monster"
+      "MonsterSheet": "QuickQuest — Monster",
+      "Rebuild": "Rebuild",
+      "PickRace": "Pick a race to see its trait",
+      "PickProfession": "Pick a profession to see its move and Ace",
+      "PlaysWhen": "plays when {trigger}"
     },
     "Stat": {
       "str": "STR",
@@ -138,7 +138,6 @@
     },
     "Ace": {
       "Play": "Play Ace",
-      "SetFirst": "Set your Ace",
       "PlayedTip": "Played this session — untick to reset",
       "Played": "Ace played",
       "OncePerSession": "Once per session. The GM says yes."
@@ -162,8 +161,8 @@
     },
     "Tip": {
       "Name": "Your hero's name — the table will shout it",
-      "Race": "Where you come from; gives your trait",
-      "Profession": "What you do; gives your move, Ace and kit",
+      "Race": "One of the six races; the trait comes with it",
+      "Profession": "One of the five professions; move, Ace, Magic Points and kit come with it",
       "Stat": "1 to 5. At 4 or 5 you roll checks with advantage",
       "Life": "0 Life = down, not dead. Max is 7 + CON × 2",
       "MP": "Spend to cast. Max is INT × 3. Comes back from crystals, places of power, or your own blood",
@@ -180,9 +179,7 @@
       "WeaponReach": "Touching = next to you · thrown = nearby · far = across the room",
       "WeaponRoll": "Roll damage: die + stat (+2 raging, + bonus)",
       "WeaponCard": "Post how this weapon is used",
-      "Ace": "Once per session, your signature moment. Play it when the trigger happens",
-      "AceName": "Name your Ace",
-      "AceTrigger": "When may you play it? e.g. \"when an ally falls\"",
+      "Ace": "Your profession's Ace. Once per session, only when its trigger happens. The GM says yes",
       "AceUsed": "Ticked when played. Untick at the start of the next session",
       "Trait": "Your race's one special thing",
       "Move": "Your profession's one special move",
@@ -199,7 +196,34 @@
       "MonsterBonus": "Flat damage: +1/+2 regular, +3/+4 boss",
       "MonsterDtype": "How it hurts: claws cut, clubs smash, fangs pierce",
       "Trick": "The one thing the table will remember about this monster",
-      "Notes": "Anything else"
+      "Notes": "Anything else",
+      "Rebuild": "Reopen the guided creation to rebuild this hero. Life, MP, coins and gear edits are kept"
+    },
+    "Wizard": {
+      "Title": "Make your hero",
+      "Step": "Step {step} of 5",
+      "StepStats": "Spread your points",
+      "StatsHint": "Every stat starts at 1. Spend 6 more points. A 4 or 5 means advantage on that stat's checks.",
+      "Points": "{spent} of 6 points spent",
+      "NeedPoints": "spend exactly 6 points to continue",
+      "StepRace": "Pick a race",
+      "StepProfession": "Pick a profession",
+      "AceLine": "Ace: {name} — plays when {trigger}",
+      "KitLine": "Kit: {kit}",
+      "HasMP": "Magic Points = INT × 3",
+      "NoMP": "No Magic Points — you don't need them",
+      "StepMagic": "Pick your magic",
+      "Cantrip": "Your cantrip — free, forever",
+      "Spells": "Your spells",
+      "FixedSpell": "{spell} (always known)",
+      "NeedSpells": "pick {n} different spell(s) to continue",
+      "StepName": "Name your hero",
+      "NamePlaceholder": "Leave it blank to be called by your profession.",
+      "Summary": "Your hero",
+      "Back": "Back",
+      "Next": "Next",
+      "Finish": "Done — make my hero",
+      "Cancel": "Cancel"
     }
   }
 }

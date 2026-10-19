@@ -36,8 +36,8 @@ All in `prepareDerivedData()`. The hero schema deliberately has **no** `life.max
 | Value | Formula | Code |
 |---|---|---|
 | Life max | `7 + CON × 2` | `HeroData.prepareDerivedData` |
-| MP max | `INT × 3` | same |
-| Defense | `10 + armor` | same |
+| MP max | `INT × 3` for Wizard/Healer, `0` for other professions | same |
+| Defense | `10 + armor`, `−2` while Raging | same |
 | Initiative rank | hero `2`, monster `1` | both models |
 
 - Stats are integers **1–5** (`statField()`). Armor is **0–4**, so Defense is 10–14.
@@ -56,7 +56,16 @@ All in `prepareDerivedData()`. The hero schema deliberately has **no** `life.max
 ### Other sheet rules
 - Hero weapons: **three fixed rows** `w1..w3`. Die d4/d6/d8, stat STR/AGI,
   type bludgeoning/cutting/piercing, reach touching / thrown nearby / far.
-- **Ace**: one named once-per-session move, tracked by a "Played this session" checkbox.
+- **Race and profession are fixed selects** (6 races, 5 professions from `docs/rulebook.md`,
+  held in `RACES` / `PROFESSIONS`). Trait, move, Ace name/trigger/effect, caster flag and
+  starting kit are **looked up from those constants by id, never stored as text**.
+- **Ace**: fixed per profession (Unbreakable, Blood Frenzy, The Opening, Final Word, Second
+  Breath), once per session, tracked by `ace.used`. The Ace-ready glow at 0 MP is the Wizard's
+  Final Word only.
+- **Creation wizard** (`QuickQuestCreationWizard`, `HandlebarsApplicationMixin(ApplicationV2)`)
+  opens on `createActor` for heroes (skip with `{ qqSkipWizard: true }`) and from the sheet's
+  Rebuild button. Five steps, defaults = balanced Human Warrior with Spark, one `actor.update()`
+  on Finish, nothing written on Cancel.
 - **Channeling** (automated in `#offerChanneling`): casting with too little MP offers
   **2 Life per missing MP, once per fight**. Refused when Life would reach 0 or below, and
   refused while the "Channeled this fight" checkbox (`magic.channeled`) is ticked. A human
@@ -87,6 +96,7 @@ module/quickquest.mjs       everything: DataModels → roll helpers → hero she
                             monster sheet → registration in Hooks.once("init")
 templates/hero-sheet.hbs    hero markup, plain named inputs
 templates/monster-sheet.hbs monster markup
+templates/creation-wizard.hbs five-step guided creation (ApplicationV2)
 styles/quickquest.css       the "letterpress" look (see below)
 languages/en.json           ALL UI strings under QQ.* (+ TYPES.Actor); pt-BR.json mirrors it 1:1
 docs/rulebook.md            The Player's Book — source of truth for every rule (edit here first)
@@ -103,10 +113,11 @@ README.md                   install notes + the manual test checklist (our only 
 
 ### Data models (`module/quickquest.mjs`)
 - `HeroData extends foundry.abstract.TypeDataModel` — `stats.{str,agi,con,int}`,
-  `life.value`, `mp.value`, `armor`, `race`, `trait`, `profession`, `move`,
-  `ace.{name,trigger,used}`, `magic.{cantrip,spell1,spell2,channeled}`, `gear`, `gold`, `silver`,
-  `raging`, `treated`, `bonus`, `weapons.{w1,w2,w3}` (each `name, die, stat, dtype, reach`).
-  Derived: `life.max`, `mp.max`, `defense`, `initiativeRank`, `aceReady`.
+  `life.value`, `mp.value`, `armor`, `race` (id), `profession` (id), `ace.used`,
+  `magic.{cantrip,spell1,spell2,channeled}`, `gear`, `gold`, `silver`, `raging`, `treated`,
+  `bonus`, `weapons.{w1,w2,w3}` (each `name, die, stat, dtype, reach`).
+  Derived: `life.max`, `mp.max`, `defense`, `initiativeRank`, `aceReady`, `raceData`,
+  `professionData` (trait, move, ace, caster, kit looked up from the constants).
 - `MonsterData` — `life.{value,max}`, `defense`, `attack.{die,bonus,dtype}`, `trick`, `notes`.
 - New persistent fields go in `defineSchema()`. New computed values go in
   `prepareDerivedData()`. Nothing else.

@@ -33,9 +33,10 @@ Actor" to a finished sheet; verify the sheet against the rulebook's creation rul
 3. **Given** the race step, **When** a race is highlighted, **Then** its trait is shown in one
    plain sentence before the player commits.
 4. **Given** the profession step, **When** a profession is chosen, **Then** move, Ace, starting
-   weapons, armor, gear and gold are filled in automatically and shown for review.
+   weapons, armor, gear and gold are shown for review and will be applied on Finish.
 5. **Given** the cantrip step, **When** the player picks, **Then** the cantrip's effect is shown
-   in one sentence.
+   in one sentence; a Wizard also picks two spells and a Healer one spell beside the fixed
+   Healing Hands, each with cost and effect shown.
 6. **Given** the name step, **When** the player types a name and confirms, **Then** the dialog
    closes and the sheet shows every field filled, with Life, MP and Defense already correct.
 
@@ -97,13 +98,19 @@ sheet, confirm it starts from the hero's current values.
 ### Functional Requirements
 
 - **FR-001**: Creating a new Hero MUST open a guided creation dialog for the creating user.
-- **FR-002**: The dialog MUST walk through, in order: stats, race, profession, cantrip, name.
+- **FR-002**: The dialog MUST walk through, in order: stats, race, profession, magic (cantrip,
+  plus spells for casters), name.
 - **FR-003**: The stats step MUST start every stat at 1, offer exactly 6 points to spend with a
   live "X of 6" counter, keep each stat within 1–5, and block progress until all 6 are spent.
 - **FR-004**: The race step MUST list the rulebook's races and show each race's trait in one
   sentence before selection.
-- **FR-005**: The profession step MUST list the rulebook's professions and, on selection, fill
-  move, Ace name, starting weapons (up to three rows), armor, gear and starting gold.
+- **FR-005**: The profession step MUST list the rulebook's five professions and show move, Ace
+  (name, trigger, effect), whether it has Magic Points, starting weapons (up to three rows),
+  armor, gear and starting gold; Finish applies the kit.
+- **FR-013**: Race and profession MUST be stored as ids and shown on the sheet as selects; trait,
+  move and Ace text MUST be read-only lookups from the rulebook data, never editable text.
+- **FR-014**: Casters (Wizard, Healer) MUST leave the wizard with legal spells: Wizard two
+  picks, Healer Healing Hands plus one pick. Non-casters get no spell slots and MP max 0.
 - **FR-006**: The cantrip step MUST list the 8 cantrips with one-sentence effects (shared with
   feature 002).
 - **FR-007**: The finished hero MUST have correct derived values with no further input.
@@ -138,9 +145,9 @@ sheet, confirm it starts from the hero's current values.
 
 - Race and profession text, point totals and starting kits come from `docs/rulebook.md`
   (feature 001); if absent the owner supplies them.
-- The wizard runs after the next game day, per BACKLOG sequencing, so real confusion observed at
-  the table shapes the step order and wording; this spec will be revised then.
-- Spell slots are not chosen in the wizard; beginners start with a cantrip only and pick spells
-  on the sheet (feature 002) when the GM introduces magic.
+- Owner asked on 2026-10-19 to build the wizard now from `docs/rulebook.md`; wording will be
+  revised after the first game day.
+- Casters pick their spells in the wizard (owner decision 2026-10-19); the sheet selects from
+  feature 002 remain for later changes.
 - All wizard strings use the language files from feature 005 so the Brazilian table gets it in
   pt-BR.

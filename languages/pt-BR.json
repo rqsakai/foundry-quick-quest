@@ -21,12 +21,8 @@
       "Fumble": "Falha d6",
       "CheckTip": "Rolar teste de {stat} (vantagem com 4+)",
       "Ace": "Ace — uma vez por sessão",
-      "AcePlaceholder": "Inquebrável, Última Palavra…",
-      "AceTriggerPlaceholder": "quando um aliado cair…",
       "AceUsed": "Usado nesta sessão",
       "TraitMove": "Traço da raça & manobra da profissão",
-      "Trait": "Traço",
-      "Move": "Manobra",
       "Spells": "Magias & encanto",
       "Gear": "Equipamento & moedas",
       "GearPlaceholder": "Corda, tochas…",
@@ -34,7 +30,11 @@
       "Silver": "Prata",
       "HeroFooter": "Acerto: d20 ≥ Defesa · 20 natural dobra o dano · atributo 4–5 = vantagem em testes · canalizar: 2 de Vida por PM faltante, uma vez por luta",
       "HeroSheet": "QuickQuest — Herói",
-      "MonsterSheet": "QuickQuest — Monstro"
+      "MonsterSheet": "QuickQuest — Monstro",
+      "Rebuild": "Refazer",
+      "PickRace": "Escolha uma raça para ver seu traço",
+      "PickProfession": "Escolha uma profissão para ver sua manobra e seu Ace",
+      "PlaysWhen": "usa quando {trigger}"
     },
     "Stat": {
       "str": "FOR",
@@ -138,7 +138,6 @@
     },
     "Ace": {
       "Play": "Usar Ace",
-      "SetFirst": "Defina seu Ace",
       "PlayedTip": "Usado nesta sessão — desmarque para reiniciar",
       "Played": "Ace usado",
       "OncePerSession": "Uma vez por sessão. O mestre diz sim."
@@ -162,8 +161,8 @@
     },
     "Tip": {
       "Name": "O nome do seu herói — a mesa vai gritá-lo",
-      "Race": "De onde você vem; dá o seu traço",
-      "Profession": "O que você faz; dá sua manobra, seu Ace e seu kit",
+      "Race": "Uma das seis raças; o traço vem junto",
+      "Profession": "Uma das cinco profissões; manobra, Ace, Pontos de Magia e kit vêm junto",
       "Stat": "De 1 a 5. Com 4 ou 5 você rola testes com vantagem",
       "Life": "0 de Vida = caído, não morto. Máximo é 7 + CON × 2",
       "MP": "Gaste para lançar magias. Máximo é INT × 3. Volta com cristais, lugares de poder ou seu próprio sangue",
@@ -180,9 +179,7 @@
       "WeaponReach": "Toque = ao seu lado · arremesso = perto · longe = do outro lado da sala",
       "WeaponRoll": "Rolar dano: dado + atributo (+2 fúria, + bônus)",
       "WeaponCard": "Publicar como esta arma é usada",
-      "Ace": "Uma vez por sessão, seu momento de glória. Use quando o gatilho acontecer",
-      "AceName": "Dê nome ao seu Ace",
-      "AceTrigger": "Quando pode usá-lo? ex.: \"quando um aliado cair\"",
+      "Ace": "O Ace da sua profissão. Uma vez por sessão, só quando o gatilho acontecer. O mestre diz sim",
       "AceUsed": "Marcado ao usar. Desmarque no início da próxima sessão",
       "Trait": "A única coisa especial da sua raça",
       "Move": "A manobra especial da sua profissão",
@@ -199,7 +196,34 @@
       "MonsterBonus": "Dano fixo: +1/+2 comum, +3/+4 chefe",
       "MonsterDtype": "Como machuca: garras cortam, porretes esmagam, presas perfuram",
       "Trick": "A única coisa que a mesa vai lembrar deste monstro",
-      "Notes": "Qualquer outra coisa"
+      "Notes": "Qualquer outra coisa",
+      "Rebuild": "Reabre a criação guiada para refazer este herói. Vida, PM, moedas e equipamento editados são mantidos"
+    },
+    "Wizard": {
+      "Title": "Crie seu herói",
+      "Step": "Passo {step} de 5",
+      "StepStats": "Distribua seus pontos",
+      "StatsHint": "Cada atributo começa em 1. Gaste mais 6 pontos. Um 4 ou 5 dá vantagem nos testes daquele atributo.",
+      "Points": "{spent} de 6 pontos gastos",
+      "NeedPoints": "gaste exatamente 6 pontos para continuar",
+      "StepRace": "Escolha uma raça",
+      "StepProfession": "Escolha uma profissão",
+      "AceLine": "Ace: {name} — usa quando {trigger}",
+      "KitLine": "Kit: {kit}",
+      "HasMP": "Pontos de Magia = INT × 3",
+      "NoMP": "Sem Pontos de Magia — você não precisa deles",
+      "StepMagic": "Escolha sua magia",
+      "Cantrip": "Seu encanto — grátis, para sempre",
+      "Spells": "Suas magias",
+      "FixedSpell": "{spell} (sempre conhecida)",
+      "NeedSpells": "escolha {n} magia(s) diferente(s) para continuar",
+      "StepName": "Dê nome ao seu herói",
+      "NamePlaceholder": "Deixe em branco para ser chamado pela profissão.",
+      "Summary": "Seu herói",
+      "Back": "Voltar",
+      "Next": "Avançar",
+      "Finish": "Pronto — criar meu herói",
+      "Cancel": "Cancelar"
     }
   }
 }

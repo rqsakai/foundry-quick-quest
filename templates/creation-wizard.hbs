@@ -1,0 +1,100 @@
+<div class="qq-sheet qq-wizard-body">
+
+  <header class="qq-wizard-head">
+    <span class="qq-lbl">{{localize "QQ.Wizard.Step" step=step}}</span>
+    <h2 class="qq-wizard-title">
+      {{#if (eq step 1)}}{{localize "QQ.Wizard.StepStats"}}{{/if}}
+      {{#if (eq step 2)}}{{localize "QQ.Wizard.StepRace"}}{{/if}}
+      {{#if (eq step 3)}}{{localize "QQ.Wizard.StepProfession"}}{{/if}}
+      {{#if (eq step 4)}}{{localize "QQ.Wizard.StepMagic"}}{{/if}}
+      {{#if (eq step 5)}}{{localize "QQ.Wizard.StepName"}}{{/if}}
+    </h2>
+  </header>
+
+  {{#if (eq step 1)}}
+  <p class="qq-hint">{{localize "QQ.Wizard.StatsHint"}}</p>
+  {{#each stats as |s|}}
+  <div class="qq-statrow">
+    <span class="qq-lbl">{{s.label}}</span>
+    <button type="button" data-action="statDec" data-stat="{{s.key}}" {{#unless s.canDec}}disabled{{/unless}}>−</button>
+    <span class="qq-statval">{{s.value}}</span>
+    <button type="button" data-action="statInc" data-stat="{{s.key}}" {{#unless s.canInc}}disabled{{/unless}}>+</button>
+  </div>
+  {{/each}}
+  <div class="qq-points{{#unless canNext}} qq-points-bad{{/unless}}">
+    {{localize "QQ.Wizard.Points" spent=spent}}{{#unless canNext}} — {{localize "QQ.Wizard.NeedPoints"}}{{/unless}}
+  </div>
+  {{/if}}
+
+  {{#if (eq step 2)}}
+  <div class="qq-choices">
+    {{#each races as |r|}}
+    <button type="button" class="qq-choice{{#if r.selected}} qq-choice-on{{/if}}" data-action="pick" data-field="race" data-value="{{r.id}}">
+      <span class="qq-choice-name">{{r.name}}</span>
+      <span class="qq-choice-text">{{r.trait}}</span>
+    </button>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  {{#if (eq step 3)}}
+  <div class="qq-choices qq-choices-1col">
+    {{#each professions as |p|}}
+    <button type="button" class="qq-choice{{#if p.selected}} qq-choice-on{{/if}}" data-action="pick" data-field="profession" data-value="{{p.id}}">
+      <span class="qq-choice-name">{{p.name}}</span>
+      <span class="qq-choice-text">{{p.move}}</span>
+      <span class="qq-choice-sub">{{p.aceLine}}</span>
+      <span class="qq-choice-sub">{{p.kitLine}} · {{p.mpLine}}</span>
+    </button>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  {{#if (eq step 4)}}
+  <span class="qq-lbl">{{localize "QQ.Wizard.Cantrip"}}</span>
+  <div class="qq-choices">
+    {{#each cantrips as |c|}}
+    <button type="button" class="qq-choice{{#if c.selected}} qq-choice-on{{/if}}" data-action="pick" data-field="cantrip" data-value="{{c.id}}">
+      <span class="qq-choice-name">{{c.name}}</span>
+      <span class="qq-choice-text">{{c.effect}}</span>
+    </button>
+    {{/each}}
+  </div>
+  {{#if caster}}
+  <span class="qq-lbl">{{localize "QQ.Wizard.Spells"}}</span>
+  {{#if fixedSpell}}
+  <div class="qq-ro"><b>{{localize "QQ.Wizard.FixedSpell" spell=fixedSpell.name}}</b> — {{fixedSpell.effect}}</div>
+  {{/if}}
+  {{#each spellSlots as |slot|}}
+  <select data-field="{{slot.key}}">{{selectOptions slot.choices selected=slot.value}}</select>
+  {{#if slot.entry}}<div class="qq-ro qq-hint">{{slot.entry.effect}}</div>{{/if}}
+  {{/each}}
+  {{#if spellProblem}}<div class="qq-points qq-points-bad">{{spellProblem}}</div>{{/if}}
+  {{/if}}
+  {{/if}}
+
+  {{#if (eq step 5)}}
+  <input type="text" class="qq-name" data-field="name" value="{{name}}" placeholder="{{namePlaceholder}}"/>
+  <p class="qq-hint">{{localize "QQ.Wizard.NamePlaceholder"}}</p>
+  {{#if summary}}
+  <div class="qq-box qq-summary">
+    <span class="qq-boxlbl">{{localize "QQ.Wizard.Summary"}}</span>
+    <div><b>{{summary.raceName}} {{summary.profName}}</b> · {{summary.stats}}</div>
+    <div>{{localize "QQ.Sheet.Life"}} {{summary.life}} · {{localize "QQ.Sheet.Magic"}} {{summary.mp}} · {{localize "QQ.Sheet.Defense"}} {{summary.defense}}</div>
+    <div>{{summary.weapons}}</div>
+    <div>{{summary.magic}}</div>
+  </div>
+  {{/if}}
+  {{/if}}
+
+  <footer class="qq-wizard-foot">
+    <button type="button" data-action="cancel">{{localize "QQ.Wizard.Cancel"}}</button>
+    {{#if (gt step 1)}}<button type="button" data-action="back">{{localize "QQ.Wizard.Back"}}</button>{{/if}}
+    {{#if (lt step 5)}}
+    <button type="button" class="qq-attack" data-action="next" {{#unless canNext}}disabled{{/unless}}>{{localize "QQ.Wizard.Next"}}</button>
+    {{else}}
+    <button type="button" class="qq-attack" data-action="finish">{{localize "QQ.Wizard.Finish"}}</button>
+    {{/if}}
+  </footer>
+
+</div>

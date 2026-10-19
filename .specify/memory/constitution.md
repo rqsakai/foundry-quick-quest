@@ -18,9 +18,12 @@ Easy 8, Tricky 12, Hard 16 and MUST be shown on every check card.
 Rationale: beginners never have to add numbers, and no feature can creep in power via +X.
 
 ### II. Derived, Never Stored
-Hero Life max (`7 + CON × 2`), MP max (`INT × 3`), Defense (`10 + armor`) and initiative
-rank (heroes 2, monsters 1) MUST be computed in `prepareDerivedData()` and MUST NOT exist as
-persisted schema fields. Monsters are the deliberate exception: their Life max and Defense
+Hero Life max (`7 + CON × 2`), MP max (`INT × 3` for Wizards and Healers, `0` for every
+other profession), Defense (`10 + armor`, `−2` while Raging) and initiative rank (heroes 2,
+monsters 1) MUST be computed in `prepareDerivedData()` and MUST NOT exist as persisted schema
+fields. Race trait, profession move and the Ace's name, trigger and effect are looked up from
+the `RACES` / `PROFESSIONS` constants by the stored race and profession ids; they are never
+stored as text. Monsters are the deliberate exception: their Life max and Defense
 are typed by the GM and stored. Monsters get tougher by gaining Life, never Defense.
 Stats are integers 1–5; armor is 0–4. Any feature that needs a new number MUST say whether
 it is stored (`defineSchema()`) or derived (`prepareDerivedData()`), and MUST NOT duplicate
@@ -51,7 +54,8 @@ The following are permanently out of scope and MUST NOT be implemented: XP, leve
 advancement system (treasure and Aces are the progression); inventory systems beyond the
 planned `weapon` and `relic` item types (plain gear stays a text box); simulationist
 subsystems of any kind. Monsters have no stats and make no checks: one attack line, one
-Trick, notes. Spells are a closed set of exactly 12 spells and 8 cantrips. Features MUST
+Trick, notes. Spells are a closed set of exactly 12 spells and 8 cantrips; races are exactly
+6 and professions exactly 5, all as written in `docs/rulebook.md`. Features MUST
 ship small: one minor version per game-day month, and anything in the BACKLOG Icebox needs
 an explicit decision before work starts.
 Rationale: every rule added is a rule a beginner must learn at a two-hour table.
@@ -66,6 +70,8 @@ Rationale: every rule added is a rule a beginner must learn at a two-hour table.
   and a single `PARTS.sheet`. No jQuery, no `activateListeners`, no Save buttons.
 - Templates are plain named inputs (`name="system.x.y"`) using only Foundry's built-in
   Handlebars helpers.
+- Non-sheet UI (the creation wizard) uses `HandlebarsApplicationMixin(ApplicationV2)` with the
+  same `DEFAULT_OPTIONS.actions` pattern and writes to the actor only on Finish.
 - All rolls go through `postRoll()`; advantage/disadvantage through `pickMode()` and
   `d20Formula()`. Every card carries a `.qq-hint` rule reminder.
 - All UI MUST use the letterpress style: paper `#f6efdf`, ink `#29211a`, hero spot `#3b5273`,
@@ -80,8 +86,9 @@ Rationale: every rule added is a rule a beginner must learn at a two-hour table.
 
 ## Development Workflow
 
-- `CLAUDE.md` is the runtime guidance for agents; `BACKLOG.md` is the roadmap of record with
-  acceptance criteria. Specs MUST cite the BACKLOG item(s) they implement and MUST NOT
+- `docs/rulebook.md` (the Player's Book) is the source of truth for every rule; change the rule
+  there first, then the code. `CLAUDE.md` is the runtime guidance for agents; `BACKLOG.md` is
+  the roadmap of record with acceptance criteria. Specs MUST cite the BACKLOG item(s) they implement and MUST NOT
   implement Non-Goals or Icebox items.
 - Feature flow: `/speckit-specify` → `/speckit-clarify` (when ambiguous) → `/speckit-plan` →
   `/speckit-tasks` → `/speckit-implement`. Plans MUST include a Constitution Check against
@@ -106,4 +113,4 @@ materially expanding guidance, PATCH for clarifications), and mirroring any rule
 `CLAUDE.md` in the same commit so the two never disagree. The project owner, who also
 authored the game rules, approves all amendments.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19
+**Version**: 1.1.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19

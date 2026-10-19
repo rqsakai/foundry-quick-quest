@@ -3,8 +3,13 @@
   <header class="qq-header">
     <input class="qq-name" name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'QQ.Sheet.HeroName'}}" title="{{localize 'QQ.Tip.Name'}}"/>
     <div class="qq-idrow">
-      <label title="{{localize 'QQ.Tip.Race'}}">{{localize "QQ.Sheet.Race"}} <input type="text" name="system.race" value="{{system.race}}"/></label>
-      <label title="{{localize 'QQ.Tip.Profession'}}">{{localize "QQ.Sheet.Profession"}} <input type="text" name="system.profession" value="{{system.profession}}"/></label>
+      <label title="{{localize 'QQ.Tip.Race'}}">{{localize "QQ.Sheet.Race"}}
+        <select name="system.race">{{selectOptions raceChoices selected=system.race blank=(localize "QQ.Magic.Empty")}}</select>
+      </label>
+      <label title="{{localize 'QQ.Tip.Profession'}}">{{localize "QQ.Sheet.Profession"}}
+        <select name="system.profession">{{selectOptions professionChoices selected=system.profession blank=(localize "QQ.Magic.Empty")}}</select>
+      </label>
+      <button type="button" class="qq-rebuild" data-action="openWizard" title="{{localize 'QQ.Tip.Rebuild'}}">{{localize "QQ.Sheet.Rebuild"}}</button>
     </div>
   </header>
 
@@ -86,18 +91,20 @@
   <section class="qq-twocol">
     <div class="qq-box{{#if system.aceReady}} qq-ace-ready{{/if}}" title="{{#if system.aceReady}}{{localize 'QQ.Magic.AceReadyTip'}}{{else}}{{localize 'QQ.Tip.Ace'}}{{/if}}">
       <span class="qq-boxlbl">{{localize "QQ.Sheet.Ace"}}</span>
-      <input type="text" name="system.ace.name" value="{{system.ace.name}}" placeholder="{{localize 'QQ.Sheet.AcePlaceholder'}}" title="{{localize 'QQ.Tip.AceName'}}"/>
-      <input type="text" name="system.ace.trigger" value="{{system.ace.trigger}}" placeholder="{{localize 'QQ.Sheet.AceTriggerPlaceholder'}}" title="{{localize 'QQ.Tip.AceTrigger'}}"/>
+      {{#if system.professionData}}
+      <div class="qq-ro qq-ro-strong" title="{{system.professionData.ace.effect}}">{{system.professionData.ace.name}}</div>
+      <div class="qq-ro" title="{{system.professionData.ace.effect}}">{{localize "QQ.Sheet.PlaysWhen" trigger=system.professionData.ace.trigger}}</div>
       <button type="button" class="qq-ace-btn" data-action="playAce"
-        {{#if system.ace.used}}disabled title="{{localize 'QQ.Ace.PlayedTip'}}"{{else if system.ace.name}}title="{{#if system.ace.trigger}}{{system.ace.trigger}}{{else}}{{localize 'QQ.Tip.Ace'}}{{/if}}"{{else}}disabled title="{{localize 'QQ.Tip.AceName'}}"{{/if}}>
-        {{#if system.ace.name}}{{localize "QQ.Ace.Play"}}{{else}}{{localize "QQ.Ace.SetFirst"}}{{/if}}
-      </button>
+        {{#if system.ace.used}}disabled title="{{localize 'QQ.Ace.PlayedTip'}}"{{else}}title="{{system.professionData.ace.effect}}"{{/if}}>{{localize "QQ.Ace.Play"}}</button>
+      {{else}}
+      <div class="qq-ro qq-hint">{{localize "QQ.Sheet.PickProfession"}}</div>
+      {{/if}}
       <label class="qq-check" title="{{localize 'QQ.Tip.AceUsed'}}"><input type="checkbox" name="system.ace.used" {{checked system.ace.used}}/> {{localize "QQ.Sheet.AceUsed"}}</label>
     </div>
     <div class="qq-box">
       <span class="qq-boxlbl">{{localize "QQ.Sheet.TraitMove"}}</span>
-      <input type="text" name="system.trait" value="{{system.trait}}" placeholder="{{localize 'QQ.Sheet.Trait'}}" title="{{localize 'QQ.Tip.Trait'}}"/>
-      <input type="text" name="system.move" value="{{system.move}}" placeholder="{{localize 'QQ.Sheet.Move'}}" title="{{localize 'QQ.Tip.Move'}}"/>
+      <div class="qq-ro" title="{{localize 'QQ.Tip.Trait'}}">{{#if system.raceData}}{{system.raceData.trait}}{{else}}<span class="qq-hint">{{localize "QQ.Sheet.PickRace"}}</span>{{/if}}</div>
+      <div class="qq-ro" title="{{localize 'QQ.Tip.Move'}}">{{#if system.professionData}}{{system.professionData.move}}{{else}}<span class="qq-hint">{{localize "QQ.Sheet.PickProfession"}}</span>{{/if}}</div>
     </div>
   </section>
 

@@ -56,3 +56,12 @@ Four stats, one die, no wrong answers.
 - Portrait editing from the sheet (set token art via token config)
 
 Compatibility: minimum v12, verified v14. If your server is v14, it will run
+23. Create Actor -> Hero: the guided creation opens on step 1 (STR 3 · AGI 3 · CON 2 · INT 2,
+    "6 of 6 points spent"). Press Next four times and Finish -> a Human Warrior named
+    "Warrior": Life 11, MP 0/0, Defense 13, Sword d6+STR, gear "Shield, chainmail", 20 gold,
+    cantrip Spark, Ace "Unbreakable — plays when you drop to 0 Life".
+24. Create another Hero, pick Elf and Wizard, set INT 3 -> magic step offers Fireball and
+    Summon Lightning by default; Finish -> MP 9/9, Staff d4+STR, Final Word Ace. Set MP 0 ->
+    Ace box glows (Wizard only). Close a third wizard with × -> plain hero, nothing written.
+25. Rebuild on the Warrior -> wizard pre-filled; switch to Healer -> Mace, Healing Hands +
+    Bless, MP 6/6; coins and gear edits are kept. Tick Raging -> Defense drops by 2.
