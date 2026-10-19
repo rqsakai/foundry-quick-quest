@@ -48,14 +48,6 @@ Four stats, one die, no wrong answers.
     click -> card with name and trigger, "Played this session" ticked, button disabled;
     untick -> enabled again.
 22. Weapon 📜 -> usage card "Mace · d8+STR · Cutting · Touching" with the damage-type line.
-
-## Not included yet
-- Items/compendia (weapons live as 3 rows on the sheet)
-- Automatic crit doubling (chat reminds you on the roll)
-- Bless/effects automation (use the bonus field + checkboxes, untick by hand)
-- Portrait editing from the sheet (set token art via token config)
-
-Compatibility: minimum v12, verified v14. If your server is v14, it will run
 23. Create Actor -> Hero: the guided creation opens on step 1 (STR 3 · AGI 3 · CON 2 · INT 2,
     "6 of 6 points spent"). Press Next four times and Finish -> a Human Warrior named
     "Warrior": Life 11, MP 0/0, Defense 13, Sword d6+STR, gear "Shield, chainmail", 20 gold,
@@ -65,3 +57,11 @@ Compatibility: minimum v12, verified v14. If your server is v14, it will run
     Ace box glows (Wizard only). Close a third wizard with × -> plain hero, nothing written.
 25. Rebuild on the Warrior -> wizard pre-filled; switch to Healer -> Mace, Healing Hands +
     Bless, MP 6/6; coins and gear edits are kept. Tick Raging -> Defense drops by 2.
+
+## Not included yet
+- Items/compendia (weapons live as 3 rows on the sheet)
+- Automatic crit doubling (chat reminds you on the roll)
+- Bless/effects automation (use the bonus field + checkboxes, untick by hand)
+- Portrait editing from the sheet (set token art via token config)
+
+Compatibility: minimum v12, verified v14. If your server is v14, it will run
