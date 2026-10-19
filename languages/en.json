@@ -64,7 +64,8 @@
     "Range": {
       "touching": "touching",
       "nearby": "nearby",
-      "far": "far"
+      "far": "far",
+      "self": "self"
     },
     "Roll": {
       "AttackTitle": "Attack roll",

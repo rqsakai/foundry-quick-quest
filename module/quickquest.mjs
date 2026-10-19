@@ -13,32 +13,33 @@ const { ActorSheetV2 } = foundry.applications.sheets;
    Keep ids stable forever; heroes store them.
    ------------------------------------------------------------ */
 
-const MAGIC_IS_PLACEHOLDER = true; // set false once every TODO below is replaced
+const MAGIC_IS_PLACEHOLDER = false; // text below matches docs/rulebook.md "Magic"
 
+// range: touching | nearby | far | self
 const SPELLS = Object.freeze([
-  { id: "spell-01", name: "TODO Spell 1",  cost: 1, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-02", name: "TODO Spell 2",  cost: 1, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-03", name: "TODO Spell 3",  cost: 2, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-04", name: "TODO Spell 4",  cost: 2, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-05", name: "TODO Spell 5",  cost: 2, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-06", name: "TODO Spell 6",  cost: 3, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-07", name: "TODO Spell 7",  cost: 3, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-08", name: "TODO Spell 8",  cost: 3, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-09", name: "TODO Spell 9",  cost: 3, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-10", name: "TODO Spell 10", cost: 4, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-11", name: "TODO Spell 11", cost: 4, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "spell-12", name: "TODO Spell 12", cost: 4, range: "nearby", effect: "TODO — copy from docs/rulebook.md" }
+  { id: "fireball",         name: "Fireball",         cost: 3, range: "far",      effect: "d6 damage to everything in a small area. Everything. Check where your friends are." },
+  { id: "summon-lightning", name: "Summon Lightning", cost: 3, range: "far",      effect: "d8 to one target you can see. Ignores their Defense entirely — it just hits." },
+  { id: "healing-hands",    name: "Healing Hands",    cost: 2, range: "touching", effect: "Restore d6+2 Life. The only thing that gets someone up from 0 mid-fight." },
+  { id: "shield-of-air",    name: "Shield of Air",    cost: 2, range: "nearby",   effect: "You or an ally gets +3 Defense until the fight ends." },
+  { id: "sleep",            name: "Sleep",            cost: 3, range: "nearby",   effect: "One creature sleeps until shaken or hurt. Not the very large; not the undead." },
+  { id: "bless",            name: "Bless",            cost: 1, range: "nearby",   effect: "An ally rolls 2d20, takes the better, on their next attack." },
+  { id: "grasping-vines",   name: "Grasping Vines",   cost: 2, range: "nearby",   effect: "Vines hold one creature. It fights but can't move; escaping takes its turn + STR vs 12." },
+  { id: "frost-bite",       name: "Frost Bite",       cost: 2, range: "nearby",   effect: "d6 damage, and frozen feet — no move on its next turn." },
+  { id: "double",           name: "Double",           cost: 2, range: "self",     effect: "A shimmering twin. The next attack that would hit you hits it, and it pops." },
+  { id: "reveal",           name: "Reveal",           cost: 1, range: "nearby",   effect: "Hidden things glow: secret doors, tracks, invisible creatures, poison in the cup." },
+  { id: "purify",           name: "Purify",           cost: 1, range: "touching", effect: "Cleanse poison or disease from food, drink, or a person." },
+  { id: "whispering-wind",  name: "Whispering Wind",  cost: 1, range: "far",      effect: "One sentence, into the ear of anyone you can see. Only they hear it." }
 ]);
 
 const CANTRIPS = Object.freeze([
-  { id: "cantrip-01", name: "TODO Cantrip 1", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-02", name: "TODO Cantrip 2", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-03", name: "TODO Cantrip 3", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-04", name: "TODO Cantrip 4", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-05", name: "TODO Cantrip 5", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-06", name: "TODO Cantrip 6", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-07", name: "TODO Cantrip 7", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" },
-  { id: "cantrip-08", name: "TODO Cantrip 8", cost: 0, range: "nearby", effect: "TODO — copy from docs/rulebook.md" }
+  { id: "spark",       name: "Spark",       cost: 0, range: "nearby",   effect: "Light a candle, fuse, or campfire from a few feet away." },
+  { id: "mend",        name: "Mend",        cost: 0, range: "touching", effect: "Fix one broken small object." },
+  { id: "light",       name: "Light",       cost: 0, range: "touching", effect: "An object glows like a torch for an hour." },
+  { id: "ghost-sound", name: "Ghost Sound", cost: 0, range: "nearby",   effect: "A noise of your choice, from where you point." },
+  { id: "chill",       name: "Chill",       cost: 0, range: "touching", effect: "Cool a drink, freeze a puddle, frost a doorknob." },
+  { id: "float",       name: "Float",       cost: 0, range: "nearby",   effect: "Lift something book-sized across the room." },
+  { id: "clean",       name: "Clean",       cost: 0, range: "touching", effect: "One object or person becomes spotless." },
+  { id: "trickster",   name: "Trickster",   cost: 0, range: "nearby",   effect: "A tiny illusion, hand-sized. It can't touch anything." }
 ]);
 
 /** Look up a spell or cantrip by stored id; null for "" or unknown ids (= empty slot). */

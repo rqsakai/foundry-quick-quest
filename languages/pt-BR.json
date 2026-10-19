@@ -64,7 +64,8 @@
     "Range": {
       "touching": "toque",
       "nearby": "perto",
-      "far": "longe"
+      "far": "longe",
+      "self": "si mesmo"
     },
     "Roll": {
       "AttackTitle": "Rolagem de ataque",

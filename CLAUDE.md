@@ -63,8 +63,8 @@ All in `prepareDerivedData()`. The hero schema deliberately has **no** `life.max
   unticks it after the fight.
 - Magic is **exactly 12 spells + 8 cantrips**, held in the `SPELLS` / `CANTRIPS` constants
   (MAGIC DATA block); init throws if the counts differ. Heroes store entry ids in
-  `magic.cantrip`, `magic.spell1`, `magic.spell2`. Cantrips cost 0 and cast free. While
-  `MAGIC_IS_PLACEHOLDER` is true the entries are TODO stubs; never release in that state.
+  `magic.cantrip`, `magic.spell1`, `magic.spell2`. Cantrips cost 0 and cast free. Entries
+  match `docs/rulebook.md` "Magic" word for word; ids are slugs (`healing-hands`) and never change.
 
 ### Automation philosophy
 **"Automate the math, let humans handle the timing."**
@@ -89,6 +89,7 @@ templates/hero-sheet.hbs    hero markup, plain named inputs
 templates/monster-sheet.hbs monster markup
 styles/quickquest.css       the "letterpress" look (see below)
 languages/en.json           ALL UI strings under QQ.* (+ TYPES.Actor); pt-BR.json mirrors it 1:1
+docs/rulebook.md            The Player's Book — source of truth for every rule (edit here first)
 docs/glossary.md            EN → pt-BR term table every string follows
 README.md                   install notes + the manual test checklist (our only test suite)
 ```
@@ -236,7 +237,8 @@ with acceptance criteria. Read it before proposing or scoping anything. Summary 
   outside this repo: compendium packs (Bestiary 11, Heroes 6, Sand King adventure) built
   with `@foundryvtt/foundryvtt-cli` from `packs/_source`, woodcut tokens, and a `docs/`
   folder with `rulebook.md` + `treasury.md` (the rules currently live outside the repo).
-  Decide versioning when merging.
+  Decide versioning when merging. `docs/rulebook.md` is already in (converted from the
+  Player's Book on 2026-10-19); `treasury.md` is not.
 - **v0.3 — the sheet teaches magic.** `SPELLS` (12) + `CANTRIPS` (8) constants; cantrip
   select + two spell-slot selects replacing free text; **Cast** button that deducts MP,
   offers channeling (2 Life per missing MP) via `DialogV2` when short, posts a chat card.
