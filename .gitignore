@@ -1,0 +1,4 @@
+.remember/
+.claude/settings.local.json
+*.zip
+node_modules/
