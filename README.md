@@ -1,12 +1,12 @@
-# QuickQuest — Foundry VTT system v0.1.0
+# QuickQuest — Foundry VTT system v0.3.0
 
 Four stats, one die, no wrong answers.
 
 ## Install
-1. Copy this whole `quickquest/` folder into your Foundry user data: `Data/systems/quickquest/`
-   (the folder containing `system.json` must be named `quickquest`)
-2. Restart the Foundry server.
-3. Create a new World and pick **QuickQuest** as its game system.
+1. In Foundry: Setup → Game Systems → Install System → paste the manifest URL
+   `https://github.com/rqsakai/foundry-quick-quest/releases/latest/download/system.json`.
+2. Create a new World and pick **QuickQuest** as its game system.
+3. New version out? Return to Setup → Game Systems → QuickQuest → **Update** → relaunch the world.
 
 ## Test checklist (in order — stop at the first failure and report it)
 1. World loads with no red errors in the F12 console.

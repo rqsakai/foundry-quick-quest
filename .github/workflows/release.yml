@@ -1,0 +1,61 @@
+# Publishes a QuickQuest release when a tag like v0.3.0 is pushed.
+# Foundry's manifest/download URLs point at releases/latest, so the server
+# picks the new version up through Setup → Update. No SSH, no scripts.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag must match system.json and README
+        run: |
+          V=$(python3 -c "import json; print(json.load(open('system.json'))['version'])")
+          if [ "v$V" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::system.json says $V but the tag is $GITHUB_REF_NAME"; exit 1
+          fi
+          if ! head -n 1 README.md | grep -q "v$V"; then
+            echo "::error::README.md header does not mention v$V"; exit 1
+          fi
+
+      - name: Language files have identical key sets
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          a = json.load(open("languages/en.json")); b = json.load(open("languages/pt-BR.json"))
+          def keys(d, p=""):
+              out = set()
+              for k, v in d.items():
+                  out |= keys(v, p + k + ".") if isinstance(v, dict) else {p + k}
+              return out
+          diff = sorted(keys(a) ^ keys(b))
+          if diff:
+              print("::error::language key mismatch:", diff); sys.exit(1)
+          print("parity ok:", len(keys(a)), "keys")
+          PY
+
+      - name: Module parses
+        run: node --check module/quickquest.mjs
+
+      - name: Build quickquest.zip (system.json at the zip root)
+        run: |
+          zip -r quickquest.zip . -x ".git/*" ".github/*" ".claude/*" ".specify/*" "specs/*" \
+            "CLAUDE.md" "BACKLOG.md" ".gitignore" "*.zip" "node_modules/*"
+          unzip -l quickquest.zip
+
+      - name: Publish release with both assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "QuickQuest ${GITHUB_REF_NAME#v}" \
+            --generate-notes \
+            system.json quickquest.zip

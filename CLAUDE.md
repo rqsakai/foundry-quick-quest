@@ -99,6 +99,7 @@ templates/monster-sheet.hbs monster markup
 templates/creation-wizard.hbs five-step guided creation (ApplicationV2)
 styles/quickquest.css       the "letterpress" look (see below)
 languages/en.json           ALL UI strings under QQ.* (+ TYPES.Actor); pt-BR.json mirrors it 1:1
+.github/workflows/release.yml tag push vX.Y.Z → checks → zip → GitHub release (the only deploy path)
 docs/rulebook.md            The Player's Book — source of truth for every rule (edit here first)
 docs/glossary.md            EN → pt-BR term table every string follows
 README.md                   install notes + the manual test checklist (our only test suite)
@@ -191,12 +192,14 @@ All new UI must match. Class prefix `qq-`.
 
 ## Dev workflow
 
-- This clone is the **dev copy**. The server loads its own git checkout at
-  `<foundry-data>/Data/systems/quickquest`.
-- Iteration loop: edit here → commit + push → `git pull` on the server → **F5** in the
-  browser. `./deploy.sh "message"` does commit + push + ssh pull in one go (fill in the
-  host/path placeholders first, or export `QQ_SERVER_HOST` / `QQ_SERVER_PATH`).
-- **Changes to `system.json` need more:** Return to Setup → relaunch the world.
+- This clone is the **dev copy**. The server runs a plain Foundry install of the system at
+  `<foundry-data>/Data/systems/quickquest` (not a git checkout — Foundry replaces that
+  folder on every update). There is **no deploy script and no SSH step**.
+- The only way code reaches the server is a **GitHub release**: push a `vX.Y.Z` tag →
+  `.github/workflows/release.yml` builds the zip and publishes it → on the server,
+  **Return to Setup → Systems → QuickQuest → Update → relaunch the world**. Foundry only
+  offers Update when the released version is newer than the installed one, so every build
+  the owner tests needs a version bump (see Shipping).
 - Regression testing is manual: run the numbered checklist in `README.md` top to bottom
   and stop at the first failure.
 - Keep the whole system in one `.mjs` until there is a real reason not to.
@@ -215,26 +218,23 @@ All new UI must match. Class prefix `qq-`.
 
 ## Shipping a release
 
-1. Bump `"version"` in `system.json` **and** the version in the `README.md` header.
-2. Commit and push. **Tag/release from that final commit** (v0.1.0 was tagged one commit
-   early — don't repeat).
-3. Check language-file parity (must print `[]`):
+Releases are built by GitHub Actions (`.github/workflows/release.yml`). Never hand-build the zip
+or run `gh release create`; the workflow does both and refuses mismatched versions.
+
+1. Bump `"version"` in `system.json` **and** the version in the `README.md` header (the
+   workflow fails if either disagrees with the tag).
+2. Commit and push to `main`.
+3. Tag **that final commit** and push the tag (v0.1.0 was tagged one commit early — don't
+   repeat):
    ```bash
-   python3 -c "import json;a=json.load(open('languages/en.json'));b=json.load(open('languages/pt-BR.json'))
-   def k(d,p=''):
-     return {p+x for x,v in d.items() if not isinstance(v,dict)}|{y for x,v in d.items() if isinstance(v,dict) for y in k(v,p+x+'.')}
-   print(sorted(k(a)^k(b)))"
+   git tag vX.Y.Z && git push origin vX.Y.Z
    ```
-4. Build the zip from the repo root. `system.json` must sit at the zip root.
-   ```bash
-   zip -r quickquest.zip . -x ".git/*" "node_modules/*" "*.zip" ".remember/*" ".claude/*" "CLAUDE.md" "deploy.sh" ".gitignore" ".specify/*" "specs/*" "BACKLOG.md"
-   ```
-5. Publish — **both assets are mandatory**; the loose `system.json` is the manifest Foundry
-   polls for updates:
-   ```bash
-   gh release create vX.Y.Z --title "QuickQuest X.Y.Z" --notes "..." system.json quickquest.zip
-   ```
-6. Delete the local zip (it is git-ignored, but don't let it linger).
+4. The workflow checks language-file parity and `node --check`, zips the repo with
+   `system.json` at the zip root (excluding `.git`, `.github`, `.claude`, `.specify`, `specs`,
+   `CLAUDE.md`, `BACKLOG.md`), and publishes the release with **both assets**: the loose
+   `system.json` is the manifest Foundry polls, the zip is what it downloads.
+5. On the server: Return to Setup → Update QuickQuest → relaunch. Watch the Actions tab if
+   Update does not appear within a minute.
 
 ---
 
@@ -268,4 +268,5 @@ with acceptance criteria. Read it before proposing or scoping anything. Summary 
       `{{localize}}` or `t()`; pick wording from `docs/glossary.md`.
 - [ ] New roll? Goes through `postRoll()`, carries a `.qq-hint` rules reminder.
 - [ ] Does it introduce timers, durations or auto-expiring effects? → Use a checkbox.
-- [ ] Touched `system.json`? Remind the user: Return to Setup → relaunch world.
+- [ ] Ready for the server? Bump the version in `system.json` + `README.md`, push, tag. The
+      owner updates from Setup; nothing else reaches the server.

@@ -2,7 +2,7 @@
   "id": "quickquest",
   "title": "QuickQuest",
   "description": "A rules-lite d20 system: four stats, one die, no wrong answers. Built for two-hour one-shots.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "authors": [{ "name": "Raul" }],
   "compatibility": {
     "minimum": "12",
